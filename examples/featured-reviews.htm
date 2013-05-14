@@ -1,0 +1,15 @@
+<html>
+<head><title>Example of Featured Reviews integration</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/bvSnippets.js"></script>
+	<script type="text/javascript">
+		$(".featuredReview").featuredReviews('http://reviews.apitestcustomer.bazaarvoice.com/', '5555', 'kuy3zj9pr3n7i0wxajrzj04xo', {});
+		$("#singlefeatured").featuredReviews('http://reviews.apitestcustomer.bazaarvoice.com/', '5555', 'kuy3zj9pr3n7i0wxajrzj04xo', {});
+	</script>
+</head>
+<body>
+	Test:
+	<div id="singleFeatured" class="featuredReview" data-id="test1"></div>
+	<div class="featuredReview" data-id="test2"></div>
+</body>
+</html>
