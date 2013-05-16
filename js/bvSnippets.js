@@ -45,38 +45,34 @@
 			featuredReviewList[currentProduct] = this;
 		});
 
-		pullReviews();
-
-		function pullReviews() {
-			$.getJSON(bvhost+"/data/batch.json?apiversion=5.4&passkey="+apikey+"&"+featuredReviewString+"&include=Products&callback=?", 
-				{dataType: 'json'},
-				function(json){
-					productId.forEach(function(element,index,array){
-						if(typeof json.BatchedResults[element].Includes.Products === 'object') {
-							reviewContent[element+'_author'] = "<div class='bvInlineReviewAuthor'><img class='bvInlineReviewAuthorAvatar' src='"+bvhost+"/static/"+displaycode+"/noAvatar.gif'></img>"+json.BatchedResults[element].Results[0].UserNickname+"</div>";
-							reviewContent[element+'_rating'] = "<img src='"+bvhost+"/"+displaycode+"/"+json.BatchedResults[element].Results[0].Rating+"/"+json.BatchedResults[element].Results[0].RatingRange+"/rating.gif' class='bvInlineRatingImage'></img>";
-							reviewContent[element+'_text'] = "<div class='bvInlineReviewText'>"+json.BatchedResults[element].Results[0].ReviewText+"</div>";
-							reviewContent[element+'_link'] = "<a href='"+bvhost+"/"+displaycode+"/"+json.BatchedResults[element].Results[0].ProductId+"/review/"+json.BatchedResults[element].Results[0].Id+"/redirect.htm' class='bvInlineReadMore'>Read More</a>";
-							reviewContent[element+'_name'] = "<div class='bvInlineReviewProductName'>"+json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].Name+"</div>";
-						}
-					});
-					$.each(featuredReviewList, function(index, value){
-						if(typeof reviewContent[index+'_name'] === 'string') {
-							$(value).html(reviewContent[index+'_name']);
-							$(value).append(reviewContent[index+'_rating']);
-							$(value).append(reviewContent[index+'_author']);
-							$(value).append(reviewContent[index+'_text'].substr(0,200));
-							$(value).append(reviewContent[index+'_link']);
-						}
-						else {
-							console.log('Error:' + reviewContent);
-							console.log('Error:' + index);
-							console.log('Error:' + value);
-						}
-					});
-				}
-			);
-		}
+		$.getJSON(bvhost+"/data/batch.json?apiversion=5.4&passkey="+apikey+"&"+featuredReviewString+"&include=Products&callback=?", 
+			{dataType: 'json'},
+			function(json){
+				productId.forEach(function(element,index,array){
+					if(typeof json.BatchedResults[element].Includes.Products === 'object') {
+						reviewContent[element+'_author'] = "<div class='bvInlineReviewAuthor'><img class='bvInlineReviewAuthorAvatar' src='"+bvhost+"/static/"+displaycode+"/noAvatar.gif'></img>"+json.BatchedResults[element].Results[0].UserNickname+"</div>";
+						reviewContent[element+'_rating'] = "<img src='"+bvhost+"/"+displaycode+"/"+json.BatchedResults[element].Results[0].Rating+"/"+json.BatchedResults[element].Results[0].RatingRange+"/rating.gif' class='bvInlineRatingImage'></img>";
+						reviewContent[element+'_text'] = "<div class='bvInlineReviewText'>"+json.BatchedResults[element].Results[0].ReviewText+"</div>";
+						reviewContent[element+'_link'] = "<a href='"+bvhost+"/"+displaycode+"/"+json.BatchedResults[element].Results[0].ProductId+"/review/"+json.BatchedResults[element].Results[0].Id+"/redirect.htm' class='bvInlineReadMore'>Read More</a>";
+						reviewContent[element+'_name'] = "<div class='bvInlineReviewProductName'>"+json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].Name+"</div>";
+					}
+				});
+				$.each(featuredReviewList, function(index, value){
+					if(typeof reviewContent[index+'_name'] === 'string') {
+						$(value).html(reviewContent[index+'_name']);
+						$(value).append(reviewContent[index+'_rating']);
+						$(value).append(reviewContent[index+'_author']);
+						$(value).append(reviewContent[index+'_text'].substr(0,200));
+						$(value).append(reviewContent[index+'_link']);
+					}
+					else {
+						console.log('Error:' + reviewContent);
+						console.log('Error:' + index);
+						console.log('Error:' + value);
+					}
+				});
+			}
+		);
 	};
 
 }(jQuery));
