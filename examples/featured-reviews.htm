@@ -4,12 +4,13 @@
 	<script type="text/javascript" src="../js/bvSnippets.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$("#bvElement_test1").featuredReviews('http://reviews.apitestcustomer.bazaarvoice.com/bvstaging/', '5555', 'kuy3zj9pr3n7i0wxajrzj04xo', {productId: 'test1'});
+			$(".featuredReview").featuredReviews('http://reviews.apitestcustomer.bazaarvoice.com/bvstaging', '5555', 'kuy3zj9pr3n7i0wxajrzj04xo');
 		});
 	</script>
 </head>
 <body>
 	Test:
-	<div id="bvElement_test1" class="featuredReview" data-id="test1">test div 1</div>
+	<div class="featuredReview" data-id="test1">test div 1</div>
+	<div class="featuredReview" data-id="test2">test div 2</div>
 </body>
 </html>
