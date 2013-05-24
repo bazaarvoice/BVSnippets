@@ -29,6 +29,8 @@
 
 
 	$.fn.featuredReviews = function(bvhost, displaycode, apikey, options){
+
+		var myThis = this;
 		
 		bvhost = (bvhost.substr(-1) == '/' ? bvhost=bvhost.substr(0, bvhost.length - 1) : bvhost); //removes trailing slash if present
 
@@ -73,6 +75,7 @@
 				});
 			}
 		);
+		console.log(myThis);
 	};
 
 }(jQuery));
