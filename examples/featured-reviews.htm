@@ -4,7 +4,10 @@
 	<script type="text/javascript" src="../js/bvSnippets.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$(".BVFeaturedReview").featuredReviews('http://reviews.apitestcustomer.bazaarvoice.com/bvstaging', '5555', 'kuy3zj9pr3n7i0wxajrzj04xo');
+			$(".BVFeaturedReview").featuredReviews('5555', 'kuy3zj9pr3n7i0wxajrzj04xo', {
+				sort: 'SubmissionTime:desc',
+				staging: true
+			});
 		});
 	</script>
 </head>

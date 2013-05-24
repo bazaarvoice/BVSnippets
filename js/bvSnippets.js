@@ -28,44 +28,50 @@
 /*******************************************************************************************/
 
 
-	$.fn.featuredReviews = function(bvhost, displaycode, apikey, options){
+	$.fn.featuredReviews = function(displaycode, apikey, options){
+
+		var renderStars = function( num ) {
+			var star = '&#9733';
+			return Array(num + 1).join(star);
+		};
 
 		var myThis = this;
 		
-		bvhost = (bvhost.substr(-1) == '/' ? bvhost=bvhost.substr(0, bvhost.length - 1) : bvhost); //removes trailing slash if present
-
 		var productId = [];
 		var reviewContent = {}; //used to capture inline rating object callback
 		var featuredReviewString = ''; //used to concatenate products for batch query
 		var featuredReviewList = {}; //list of products to query
 
+		var template = 
+		'\<div class\=\"BVFRWContainer\"\>\<div class\=\"BVFRWProductImage\"\>\<img src\=\"{{SubjectImage}}\"\>\</div\>\<div class\=\"BVFRWContainerHeader\"\>\<div class\=\"BVFRWReviewTitle\"\>\<a href\=\"{{ReviewDeepLink}}\"\>{{ReviewTitle}}\</a\>\</div\>\<div class\=\"BVFRWInlineReviewAuthor\"\>\<span class\=\"BVFRWReviewBy\"\>By:\</span\>{{ReviewAuthor}}\</div\>\</div\>\<div class\=\"BVFRWContent\"\>\<div class\=\"BVFRWRatingImage\"\>{{ReviewRating}}/{{ReviewRatingRange}}\</div\>\<div class\=\"BVFRWproductName\"\>{{SubjectName}}\</div\>\<div class\=\"BVFRWReviewText\"\>{{ReviewText}}\</div\>\<a class\=\"BVFRWReadMore\" href\=\"{{ReviewDeepLink}}\"\>Read More\</a\>\</div\>\</div\>';
+
 		this.each(function(element, index, array){
 			var currentProduct = $(this).attr("data-id");
 			productId.push(currentProduct);
-			console.log(currentProduct);
-			featuredReviewString+='&resource.'+currentProduct+'=reviews&filter.'+currentProduct+'=IsFeatured:true&Limit.'+currentProduct+'=1&Filter.'+currentProduct+'=productId:'+currentProduct+'&Sort.'+currentProduct+'=SubmissionTime:desc';
+			featuredReviewString+='&resource.'+currentProduct+'=reviews&filter.'+currentProduct+'=IsFeatured:true&Limit.'+currentProduct+'=1&Filter.'+currentProduct+'=productId:'+currentProduct+'&Sort.'+currentProduct+'='+( options !== undefined && options.sort !== undefined ? options.sort : 'LastModificationTime:desc' );
 			featuredReviewList[currentProduct] = this;
 		});
 
-		$.getJSON(bvhost+"/data/batch.json?apiversion=5.4&passkey="+apikey+"&"+featuredReviewString+"&include=Products&callback=?", 
+		$.getJSON((options.staging !== undefined && options.staging == false ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion=5.4&passkey="+apikey+"&"+featuredReviewString+"&include=Products&callback=?", 
 			{dataType: 'json'},
 			function(json){
 				productId.forEach(function(element,index,array){
 					if(typeof json.BatchedResults[element].Includes.Products === 'object') {
-						reviewContent[element+'_author'] = "<div class='bvInlineReviewAuthor'><img class='bvInlineReviewAuthorAvatar' src='"+bvhost+"/static/"+displaycode+"/noAvatar.gif'></img>"+json.BatchedResults[element].Results[0].UserNickname+"</div>";
-						reviewContent[element+'_rating'] = "<img src='"+bvhost+"/"+displaycode+"/"+json.BatchedResults[element].Results[0].Rating+"/"+json.BatchedResults[element].Results[0].RatingRange+"/rating.gif' class='bvInlineRatingImage'></img>";
-						reviewContent[element+'_text'] = "<div class='bvInlineReviewText'>"+json.BatchedResults[element].Results[0].ReviewText+"</div>";
-						reviewContent[element+'_link'] = "<a href='"+bvhost+"/"+displaycode+"/"+json.BatchedResults[element].Results[0].ProductId+"/review/"+json.BatchedResults[element].Results[0].Id+"/redirect.htm' class='bvInlineReadMore'>Read More</a>";
-						reviewContent[element+'_name'] = "<div class='bvInlineReviewProductName'>"+json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].Name+"</div>";
+						console.log(json.BatchedResults[element].Includes.ProductsOrder[0]);
+						reviewContent[element] = template
+							.replace(/{{SubjectImage}}/g,  json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].ImageUrl)
+							.replace(/{{ReviewDeepLink}}/g,  json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].ProductPageUrl + '#review/' + json.BatchedResults[element].Results[0].Id)
+							.replace(/{{ReviewRating}}/g,  renderStars(json.BatchedResults[element].Results[0].Rating))
+							.replace(/{{ReviewRatingRange}}/g,  json.BatchedResults[element].Results[0].RatingRange)
+							.replace(/{{ReviewTitle}}/g,  json.BatchedResults[element].Results[0].Title)
+							.replace(/{{ReviewAuthor}}/g,  json.BatchedResults[element].Results[0].UserNickname)
+							.replace(/{{SubjectName}}/g,  json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].Name)
+							.replace(/{{ReviewText}}/g,  json.BatchedResults[element].Results[0].ReviewText);
 					}
 				});
 				$.each(featuredReviewList, function(index, value){
-					if(typeof reviewContent[index+'_name'] === 'string') {
-						$(value).html(reviewContent[index+'_name']);
-						$(value).append(reviewContent[index+'_rating']);
-						$(value).append(reviewContent[index+'_author']);
-						$(value).append(reviewContent[index+'_text'].substr(0,200));
-						$(value).append(reviewContent[index+'_link']);
+					if(typeof reviewContent[index] === 'string') {
+						$(value).html(reviewContent[index]);
 					}
 					else {
 						console.log('Error:' + reviewContent);
