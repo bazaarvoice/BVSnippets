@@ -57,16 +57,17 @@
 			function(json){
 				productId.forEach(function(element,index,array){
 					if(typeof json.BatchedResults[element].Includes.Products === 'object') {
-						console.log(json.BatchedResults[element].Includes.ProductsOrder[0]);
+						var productNode = json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]]; //Product Information
+						var reviewsNode = json.BatchedResults[element].Results[0]; //Review Content
 						reviewContent[element] = template
-							.replace(/{{SubjectImage}}/g,  json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].ImageUrl)
-							.replace(/{{ReviewDeepLink}}/g,  json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].ProductPageUrl + '#review/' + json.BatchedResults[element].Results[0].Id)
-							.replace(/{{ReviewRating}}/g,  renderStars(json.BatchedResults[element].Results[0].Rating))
-							.replace(/{{ReviewRatingRange}}/g,  json.BatchedResults[element].Results[0].RatingRange)
-							.replace(/{{ReviewTitle}}/g,  json.BatchedResults[element].Results[0].Title)
-							.replace(/{{ReviewAuthor}}/g,  json.BatchedResults[element].Results[0].UserNickname)
-							.replace(/{{SubjectName}}/g,  json.BatchedResults[element].Includes.Products[json.BatchedResults[element].Includes.ProductsOrder[0]].Name)
-							.replace(/{{ReviewText}}/g,  json.BatchedResults[element].Results[0].ReviewText);
+							.replace(/{{SubjectImage}}/g,  productNode.ImageUrl)
+							.replace(/{{ReviewDeepLink}}/g,  productNode.ProductPageUrl + '#review/' + json.BatchedResults[element].Results[0].Id)
+							.replace(/{{ReviewRating}}/g,  renderStars(reviewsNode.Rating))
+							.replace(/{{ReviewRatingRange}}/g,  reviewsNode.RatingRange)
+							.replace(/{{ReviewTitle}}/g,  reviewsNode.Title)
+							.replace(/{{ReviewAuthor}}/g,  reviewsNode.UserNickname)
+							.replace(/{{SubjectName}}/g,  productNode.Name)
+							.replace(/{{ReviewText}}/g,  reviewsNode.ReviewText);
 					}
 				});
 				$.each(featuredReviewList, function(index, value){
