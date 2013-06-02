@@ -1,19 +1,22 @@
 <html>
 <head><title>Example of Featured Reviews integration</title>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
 	<script type="text/javascript" src="../js/bvSnippets.js"></script>
+	<link href="../css/bvSnippets_FeaturedReview_theme1.css" rel="stylesheet">
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$(".BVFeaturedReview").featuredReviews('5555', 'kuy3zj9pr3n7i0wxajrzj04xo', {
-				sort: 'SubmissionTime:desc',
-				staging: true
+			$(".BVFeaturedReview").featuredReviews('http://reviews.myshco.com', '9344-en_us', '72n07szwiwjspk7x6idcry4ch', {
+				sort: 'LastModificationTime:desc',
+				filters: 'IsFeatured:true&Filter=Rating:lte:5',
+				staging: true,
+				limit: 10
 			});
 		});
 	</script>
 </head>
 <body>
 	Test:
-	<div class="BVFeaturedReview" data-id="test1">test div 1</div>
-	<div class="BVFeaturedReview" data-id="test2">test div 2</div>
+	<div class="BVFeaturedReview" data-id="3000001"></div>
+	<div class="BVFeaturedReview BVFRCHorizontalLeft" data-id="1000001"></div>
 </body>
 </html>

@@ -1,0 +1,57 @@
+/* =Basic Styles
+    ------------------------------------------------------ */
+
+/*Images*/
+.BVFeaturedReviewContainer img {display: block; max-width: 100%;}
+
+/*Wrapper*/
+.BVFRWContainer {background: #fff; border: 1px solid #ccc;}
+
+/*ProductImage*/
+.BVFRWProductImage {border-bottom: 1px solid #ccc;}
+
+/*Header*/
+.BVFRWContainerHeader {margin-bottom: 10px; padding: 0 10px; font-size: 16px;}
+.BVFRWReviewTitle {margin-top: 20px; font-weight: bold;}
+.BVFRWReviewTitle a {color: #333; text-decoration: none;}
+.BVFRWReviewBy {font-style: italic;}
+.BVFRWInlineReviewAuthor {margin-top: 6px; color: #333; font-size: 12px; font-weight: bold;}
+
+/*Typo*/
+h3 {border-bottom: none; color: #aeaeae;}
+span p {color: #aeaeae;}
+
+/*MainContent*/
+.BVFRWContent {padding: 0 10px; color: #444; font-size: 14px;}
+.BVFRWReviewText {margin-top: 10px; line-height: 1.2;}
+.BVFRWproductName {margin-top: 6px; color: #333; font-size: 12px; font-weight: bold;}
+a.BVFRWReadMore {background: #333; display: block; height: 30px; padding: 0 10px; border-radius: 5px; margin-top: 10px; margin-bottom: 20px; color: #fff; font-size: 14px; font-weight: bold; line-height: 30px; text-align: center; text-decoration: none;}
+a.BVFRWReadMore:hover {background: #999; text-decoration: underline;}
+
+/* =OneThird
+    ------------------------------------------------------ */
+.BVFRoneThird .BVFeaturedReviewContainer {float: left; margin-right: 3.4%; width: 31%;}
+.BVFRoneThird.last .BVFeaturedReviewContainer {margin-right: 0;}
+
+/*ProductImage*/
+.BVFRoneThird .BVFRWProductImage {display: none;}
+
+
+/* =Horizontal.Left Focused on Review Title
+    ------------------------------------------------------ */
+
+/*Wrapper*/
+.BVFRCHorizontalLeft .BVFRWContainer {overflow: hidden;}
+
+/*Header*/
+.BVFRCHorizontalLeft .BVFRWReviewTitle {margin-top: 20px; font-size: 18px;}
+
+/*ProductImage*/
+.BVFRCHorizontalLeft .BVFRWProductImage {border-bottom: none; border-right: 1px solid #ccc; float: left; margin-right: 20px; width: 50%;}
+
+/*MainContent*/
+.BVFWRatingBackground {display: block; color: #AAA;}
+.BVFWRatingWrapper {position: relative;}
+.BVFRWRating {display: block; top: 0; position: absolute; color: #000;}
+.BVFRCHorizontalLeft .BVFRWReviewText {display: none;}
+.BVFRCHorizontalLeft a.BVFRWReadMore {float: left; margin-bottom: 0;}
