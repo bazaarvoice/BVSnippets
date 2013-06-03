@@ -11,7 +11,7 @@
 // This example shows the javascript syntax
 // for displaying a featured review
 
-// The following elements are requried:
+// The following element(s) are requried:
 // - apikey
 
 // If you omit any optional elements, be sure to exclude the element
@@ -58,7 +58,7 @@
 				ReviewRatingRangeStars: 'renderStars(reviewElement.RatingRange)',
 				ReviewRatingStars: 'renderStars(reviewElement.Rating)',
 				SubjectName: 'productNode.Name',
-				ReviewText: 'reviewElement.ReviewText',
+				ReviewText: 'reviewElement.ReviewText'
 			}
 		}; //To remove or hide elements from this template, use CSS rather than editing the DOM
 
