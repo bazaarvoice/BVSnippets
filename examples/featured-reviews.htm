@@ -14,6 +14,15 @@
 			legacy_displaycode: '9344-en_us'
 		});
 
+		$(".BVFeaturedQuestion").featuredQuestions('72n07szwiwjspk7x6idcry4ch', {
+			sort: 'LastModificationTime:desc',
+			filters: 'IsFeatured:false',
+			staging: true,
+			limit: 3,
+			legacy_hostname: 'http://reviews.myshco.com',
+			legacy_displaycode: '9344-en_us'
+		});
+
 		$(".BVFeaturedReviewC13").featuredReviews('305i5xcijnuk5ykdjltwco1q8', {
 			staging: true
 		});
@@ -22,7 +31,7 @@
 </head>
 <body>
 	Test:
-	<div class="BVFeaturedReview" data-id="3000001">test1234</div>
+	<div class="BVFeaturedQuestion" data-id="3000001">test1234</div>
 	<div class="BVFeaturedReview" data-id="1000001"></div>
 	<div class="BVFeaturedReview BVFRCHorizontalLeft" data-id="1000001"></div>
 	<div class="BVFeaturedReview BVFRCHorizontalLeft" data-id="3000001"></div>
