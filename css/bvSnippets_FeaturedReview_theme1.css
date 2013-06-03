@@ -51,7 +51,7 @@ a.BVFRWReadMore:hover {background: #999; text-decoration: underline;}
 
 /*MainContent*/
 .BVFWRatingBackground {display: block; color: #AAA;}
-.BVFWRatingWrapper {display: inline-block; position: relative;}
+.BVFWRatingWrapper {display: inline-block; position: relative; margin: 2px 0;}
 .BVFRWRating {display: block; top: 0; position: absolute; color: #000;}
 .BVFRCHorizontalLeft .BVFRWReviewText {display: none;}
 .BVFRCHorizontalLeft a.BVFRWReadMore {float: left; margin-bottom: 0;}
