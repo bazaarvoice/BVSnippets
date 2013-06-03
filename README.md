@@ -32,10 +32,10 @@ The class or ID is used as the selector, data-id equals the product ID as it app
 
 Optional Parameters
 ===================
-sort - This may be any valid sort listed here: https://developer.bazaarvoice.com/docs/read/Home
-filters - This may be any valid filter listed here:
-https://developer.bazaarvoice.com/docs/read/Home
+<pre>sort - This may be any valid sort listed here: https://developer.bazaarvoice.com/docs/read/Home
+filters - This may be any valid filter listed here: https://developer.bazaarvoice.com/docs/read/Home
 staging - True indicates staging servers will be used, By default this is False and production servers are used.
 limit - Defaults to 1, may be up to 100 per product.
 legacy_hostname - This is used by legacy PRR/Conversations 1.0 and 2.0 clients.  Leave this blank if provisioned on Conversations 2013.
 legacy_displaycode - This is used by legacy PRR/Conversations 1.0 and 2.0 clients.  Leave this blank if provisioned on Conversations 2013.
+</pre>
