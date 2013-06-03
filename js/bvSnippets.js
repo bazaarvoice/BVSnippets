@@ -75,19 +75,22 @@
 		);
 	};
 
-	function renderResults(resultsJson, resultsList, domTemplate) { //TODO: remove review specific data
+	function renderResults(resultsJson, resultsList, domTemplate) {
+		if(resultsJson.Errors.length > 0){
+			console.log(JSON.stringify(resultsJson.Errors));
+		}
 		$.each(resultsList, function(key, value){
-			if(typeof resultsJson.BatchedResults[value.productId].Includes.Products === 'object') {
+			if(typeof resultsJson.BatchedResults[value.productId] === 'object') {
 				var productNode = resultsJson.BatchedResults[value.productId].Includes.Products[resultsJson.BatchedResults[value.productId].Includes.ProductsOrder[0]]; //Product Information
-				var reviewsNode = resultsJson.BatchedResults[value.productId].Results; //All Review Content
-				var reviewsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
-				reviewsNode.forEach(function(reviewElement,reviewIndex,reviewArray){
-					reviewsDOM += domTemplate.DOM;
+				var contentsNode = resultsJson.BatchedResults[value.productId].Results; //All Review Content
+				var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
+				contentsNode.forEach(function(reviewElement,reviewIndex,reviewArray){
+					contentsDOM += domTemplate.DOM;
 					$.each(domTemplate.Tokens, function(key, value){
-						reviewsDOM = reviewsDOM.replace(eval('/{{'+key+'}}/g'),  eval(value)); //searches template for key and replaces it with specified path
+						contentsDOM = contentsDOM.replace(eval('/{{'+key+'}}/g'),  eval(value)); //searches template for key and replaces it with specified path
 					});
 				});
-				$(value.Node).html(reviewsDOM); //push list of reviews to the dom
+				$(value.Node).html(contentsDOM); //push list of reviews to the dom
 			}
 		});
 	}
