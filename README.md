@@ -31,6 +31,8 @@ DOM Syntax
 ```
 
 The class or ID is used as the selector, data-id equals the product ID as it appears in the externalId in the product feed.  This should have at least one featured review.
+<b>IMPORTANT</b>
+`data-id` is a required attribute.
 
 Optional Parameters
 ===================
@@ -44,4 +46,4 @@ legacy_displaycode - This is used by legacy PRR/Conversations 1.0 and 2.0 client
 
 Notes
 =====
-The sort and filters parameters accept multiple parameters stringed together.  If using more than one, be sure to prepend the second with either '$sort=' or '&filter=' or the query will fail.
+The sort and filters parameters accept multiple parameters stringed together.  If using more than one, be sure to prepend the second with either `$sort=` or `&filter=` or the query will fail.
