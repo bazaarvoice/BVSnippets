@@ -47,14 +47,16 @@
 		var queryString = '';
 
 		var reviewsTemplate = {
-			DOM: '\<div class\=\"BVFRWContainer\"\>\<div class\=\"BVFRWProductImage\"\>\<img src\=\"{{SubjectImage}}\"\>\</div\>\<div class\=\"BVFRWContainerHeader\"\>\<div class\=\"BVFRWReviewTitle\"\>\<a href\=\"{{ReviewDeepLink}}\"\>{{ReviewTitle}}\</a\>\</div\>\<div class\=\"BVFRWInlineReviewAuthor\"\>\<span class\=\"BVFRWReviewBy\"\>By:\</span\>{{ReviewAuthor}}\</div\>\</div\>\<div class\=\"BVFRWContent\"\>\<div class\=\"BVFWRatingWrapper\"\>\<div class\=\"BVFWRatingBackground\"\>{{ReviewRatingRange}}\</div\>\<div class\=\"BVFRWRating\"\>{{ReviewRating}}\</div\>\</div\>\<div class\=\"BVFRWproductName\"\>{{SubjectName}}\</div\>\<div class\=\"BVFRWReviewText\"\>{{ReviewText}}\</div\>\<a class\=\"BVFRWReadMore\" href\=\"{{ReviewDeepLink}}\"\>Read More\</a\>\</div\>\</div\>',
+			DOM: '\<div class\=\"BVFRWContainer BVRating_{{ReviewRating}}_{{ReviewRatingRange}}\"\>\<div class\=\"BVFRWProductImage\"\>\<img src\=\"{{SubjectImage}}\"\>\</div\>\<div class\=\"BVFRWContainerHeader\"\>\<div class\=\"BVFRWReviewTitle\"\>\<a href\=\"{{ReviewDeepLink}}\"\>{{ReviewTitle}}\</a\>\</div\>\<div class\=\"BVFRWInlineReviewAuthor\"\>\<span class\=\"BVFRWReviewBy\"\>By:\</span\>{{ReviewAuthor}}\</div\>\</div\>\<div class\=\"BVFRWContent\"\>\<div class\=\"BVFWRatingWrapper\"\>\<div class\=\"BVFWRatingBackground\"\>{{ReviewRatingRangeStars}}\</div\>\<div class\=\"BVFRWRating\"\>{{ReviewRatingStars}}\</div\>\</div\>\<div class\=\"BVFRWproductName\"\>{{SubjectName}}\</div\>\<div class\=\"BVFRWReviewText\"\>{{ReviewText}}\</div\>\<a class\=\"BVFRWReadMore\" href\=\"{{ReviewDeepLink}}\"\>Read More\</a\>\</div\>\</div\>',
 			Tokens: { //key should be the token, and assigned to path in the json result relative to the individual review
 				SubjectImage: 'productNode.ImageUrl',
 				ReviewDeepLink: ( !options.legacy_hostname && !options.legacy_displaycode ? 'productNode.ProductPageUrl+"#review/"+reviewElement.Id' : '"'+options.content_path+'"+reviewElement.ProductId+"/review/"+reviewElement.Id+"/redirect.htm"'), //this one is weird, but has to be here and escaped.
 				ReviewTitle: 'reviewElement.Title',
 				ReviewAuthor: 'reviewElement.UserNickname',
-				ReviewRatingRange: 'renderStars(reviewElement.RatingRange)',
-				ReviewRating: 'renderStars(reviewElement.Rating)',
+				ReviewRatingRange: 'reviewElement.RatingRange',
+				ReviewRating: 'reviewElement.Rating',
+				ReviewRatingRangeStars: 'renderStars(reviewElement.RatingRange)',
+				ReviewRatingStars: 'renderStars(reviewElement.Rating)',
 				SubjectName: 'productNode.Name',
 				ReviewText: 'reviewElement.ReviewText',
 			}
