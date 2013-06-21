@@ -47,3 +47,50 @@ legacy_displaycode - This is used by legacy PRR/Conversations 1.0 and 2.0 client
 Notes
 =====
 The sort and filters parameters accept multiple parameters stringed together.  If using more than one, be sure to prepend the second with either `$sort=` or `&filter=` or the query will fail.
+
+Styles
+=====
+
+This widget has a pre-built theme with basic styles. It also has four pre-built layouts.
+
+The pre-built theme defines the styles of the text, stars, image, button, and heading. It also displays the widget in a vertical layout.
+To use the pre-built theme with basic styles, simply add the class `BVFeaturedReviewContainer` to the div:
+```
+<div class="BVFeaturedReview" data-id="1000001"></div>
+```
+
+The other available layouts are the following:
+
+1. Vertical Layout.
+2. No Image Layout
+3. Horizontal Layout, Image Left Aligned
+4. Horizontal Layout, Image Right Aligned
+
+To use one of the pre-built layouts add one of the following classes to the parent div containing the widget:
+
+
+1. Vertical Layout. You only need the class `BVFeaturedReview`. You don't need additional classes for the vertical layout:
+```
+<div class="BVFeaturedReview" data-id="1000001"></div>
+```
+
+2. No Image Layout. Add the class `BVFRCNoImage` to the parent div:
+```
+<div class="clientRow BVFRCNoImage">
+	<div class="BVFeaturedReviewContainer" data-id="1000001"></div>
+</div>
+```
+
+3. Horizontal Layout, Image Left Aligned. Add the class `BVFRCHorizontalLeft` to the parent div:
+```
+<div class="clientRow BVFRCHorizontalLeft">
+	<div class="BVFeaturedReviewContainer" data-id="1000001"></div>
+</div>
+```
+
+4. Horizontal Layout, Image Right Aligned. Add the class `BVFRCHorizontalRight` to the parent div:
+```
+<div class="clientRow BVFRCHorizontalRight">
+	<div class="BVFeaturedReviewContainer" data-id="1000001"></div>
+</div>
+```
