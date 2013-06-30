@@ -88,7 +88,8 @@
 			apiversion: (options.apiversion !== undefined ? options.apiversion : '5.4'),
 			legacy_hostname: (options.legacy_hostname !== undefined ? options.legacy_hostname : false ), //false indicates C13 client
 			legacy_displaycode: (options.displaycode !== undefined ? options.displaycode : false ), //false indicates C13 client
-			content_path: (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com'))
+			content_path: (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com')),
+			abbreviate_text: (options.abbreviate_text !== undefined ? options.abbreviate_text : false)
 		};
 	}
 
@@ -109,6 +110,11 @@
 			return link;
 		});
 		
+		Handlebars.registerHelper('contentText', function(content) { //id is the question id, pdp is the product page url, pid is the product external id
+			var text = ( !options.abbreviate_text ? content : (content != null && content.length > options.abbreviate_text ? content.substring(0,options.abbreviate_text)+'...' : content ) );
+			return text;
+		});
+
 		if(contentType == 'reviews') {
 			return Handlebars.compile(' \
 				<div class="BVFRWContainer BVRating_{{Rating}}_{{RatingRange}}"> \
@@ -130,7 +136,7 @@
 							<div class="BVFRWRating">{{{starRatings Rating}}}</div> \
 						</div> \
 						<div class="BVFRWproductName">{{product.Name}}</div> \
-						<div class="BVFRWReviewText">{{ReviewText}}</div> \
+						<div class="BVFRWReviewText">{{contentText ReviewText}}</div> \
 						<a class="BVFRWReadMore" href="{{reviewDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
 					</div> \
 				</div>');
@@ -152,7 +158,7 @@
 					</div> \
 					<div class="BVFQContent"> \
 						<div class="BVFQproductName">{{product.Name}}</div> \
-						<div class="BVFQQuestionText">{{QuestionDetails}}</div> \
+						<div class="BVFQQuestionText">{{contentText QuestionDetails}}</div> \
 						<a class="BVFQReadMore" href="{{questionDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
 					</div> \
 				</div>');
