@@ -1,6 +1,6 @@
 (function($){
 /*******************************************************************************************/    
-// jquery.bvSnippets.js - version 1.0
+// jquery.bvSnippets.js - version 1.1
 // A jQuery plugin for injecting common Bazaarvoice Data API snippets
 // 
 // Copyright (c) 2013, Ben Balentine
@@ -93,35 +93,69 @@
 	}
 
 	function renderAPIMap(contentType, options) { //Returns the appropriate content API map for each content type.  This may eventually be replaced by a schema validation function or universal node type reference.
+
+		Handlebars.registerHelper('starRatings', function(num) {
+			var star = '&#9733;'; //note: star color and background color must be set individually in CSS
+			return Array(num + 1).join(star);
+		});
+
+		Handlebars.registerHelper('reviewDeepLink', function(Id,pdp,pid) { //id is the review id, pdp is the product page url, pid is the product external id
+			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#review/"+Id : options.content_path+pid+"/review/"+Id+"/redirect.htm")
+			return link;
+		});
+
+		Handlebars.registerHelper('questionDeepLink', function(Id,pdp,pid) { //id is the question id, pdp is the product page url, pid is the product external id
+			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#question/"+Id : options.content_path+pid+"/question/"+Id+"/redirect.htm")
+			return link;
+		});
+		
 		if(contentType == 'reviews') {
-			return { //To remove or hide elements from this template, use CSS rather than editing the DOM
-				DOM: '\<div class\=\"BVFRWContainer BVRating_{{ReviewRating}}_{{ReviewRatingRange}}\"\>\<div class\=\"BVFRWProductImage\"\>\<img src\=\"{{SubjectImage}}\"\>\</div\>\<div class\=\"BVFRWContainerHeader\"\>\<div class\=\"BVFRWReviewTitle\"\>\<a href\=\"{{ReviewDeepLink}}\"\>{{ReviewTitle}}\</a\>\</div\>\<div class\=\"BVFRWInlineReviewAuthor\"\>\<span class\=\"BVFRWReviewBy\"\>By:\</span\>{{ReviewAuthor}}\</div\>\</div\>\<div class\=\"BVFRWContent\"\>\<div class\=\"BVFWRatingWrapper\"\>\<div class\=\"BVFWRatingBackground\"\>{{ReviewRatingRangeStars}}\</div\>\<div class\=\"BVFRWRating\"\>{{ReviewRatingStars}}\</div\>\</div\>\<div class\=\"BVFRWproductName\"\>{{SubjectName}}\</div\>\<div class\=\"BVFRWReviewText\"\>{{ReviewText}}\</div\>\<a class\=\"BVFRWReadMore\" href\=\"{{ReviewDeepLink}}\"\>Read More\</a\>\</div\>\</div\>',
-				Tokens: { //key should be the token, and assigned to path in the json result relative to the individual review
-					SubjectImage: 'productNode.ImageUrl',
-					ReviewDeepLink: ( !options.legacy_hostname && !options.legacy_displaycode ? 'productNode.ProductPageUrl+"#review/"+contentElement.Id' : '"'+options.content_path+'"+contentElement.ProductId+"/review/"+contentElement.Id+"/redirect.htm"'), //this one is weird, but has to be here and escaped.
-					ReviewTitle: 'contentElement.Title',
-					ReviewAuthor: 'contentElement.UserNickname',
-					ReviewRatingRange: 'contentElement.RatingRange',
-					ReviewRating: 'contentElement.Rating',
-					ReviewRatingRangeStars: 'renderStars(contentElement.RatingRange)',
-					ReviewRatingStars: 'renderStars(contentElement.Rating)',
-					SubjectName: 'productNode.Name',
-					ReviewText: 'contentElement.ReviewText'
-				}
-			};
+			return Handlebars.compile(' \
+				<div class="BVFRWContainer BVRating_{{Rating}}_{{RatingRange}}"> \
+					<div class="BVFRWProductImage"> \
+						<img src="{{product.ImageUrl}}"> \
+					</div> \
+					<div class="BVFRWContainerHeader"> \
+						<div class="BVFRWReviewTitle"> \
+							<a href="{{reviewDeepLink Id product.ProductPageUrl productId}}">{{Title}}</a> \
+						</div> \
+						<div class="BVFRWInlineReviewAuthor"> \
+							<span class="BVFRWReviewBy">By:</span> \
+							<span class="BVFRWReviewAuthor">{{UserNickname}}</span> \
+						</div> \
+					</div> \
+					<div class="BVFRWContent"> \
+						<div class="BVFWRatingWrapper"> \
+							<div class="BVFWRatingBackground">{{{starRatings RatingRange}}}</div> \
+							<div class="BVFRWRating">{{{starRatings Rating}}}</div> \
+						</div> \
+						<div class="BVFRWproductName">{{product.Name}}</div> \
+						<div class="BVFRWReviewText">{{ReviewText}}</div> \
+						<a class="BVFRWReadMore" href="{{reviewDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
+					</div> \
+				</div>');
 		}
 		else if(contentType == 'questions') {
-			return { //To remove or hide elements from this template, use CSS rather than editing the DOM
-				DOM: '\<div class\=\"BVFQContainer\"\>\<div class\=\"BVFQSubjectImage\"\>\<img src\=\"{{SubjectImage}}\"\>\</div\>\<div class\=\"BVFQContainerHeader\"\>\<div class\=\"BVFQSummary\"\>\<a href\=\"{{QuestionDeepLink}}\"\>{{QuestionSummary}}\</a\>\</div\>\<div class\=\"BVFQAuthor\"\>\<span class\=\"BVFQQuestionBy\"\>By:\</span\>{{QuestionAuthor}}\</div\>\</div\>\<div class\=\"BVFQContent\"\>\<div class\=\"BVFQproductName\"\>{{SubjectName}}\</div\>\<div class\=\"BVFQQuestionText\"\>{{QuestionText}}\</div\>\<a class\=\"BVFQReadMore\" href\=\"{{QuestionDeepLink}}\"\>Read More\</a\>\</div\>\</div\>',
-				Tokens: { //key should be the token, and assigned to path in the json result relative to the individual review
-					SubjectImage: 'productNode.ImageUrl',
-					QuestionDeepLink: ( !options.legacy_hostname && !options.legacy_displaycode ? 'productNode.ProductPageUrl+"#question/"+contentElement.Id' : '"'+options.content_path+'"+contentElement.ProductId+"/question/"+contentElement.Id+"/redirect.htm"'), //this one is weird, but has to be here and escaped.
-					QuestionSummary: 'contentElement.QuestionSummary',
-					QuestionAuthor: 'contentElement.UserNickname',
-					SubjectName: 'productNode.Name',
-					QuestionText: 'contentElement.QuestionDetails'
-				}
-			};
+			return Handlebars.compile(' \
+				<div class="BVFQContainer"> \
+					<div class="BVFQSubjectImage"> \
+						<img src="{{product.ImageUrl}}"> \
+					</div> \
+					<div class="BVFQContainerHeader"> \
+						<div class="BVFQSummary"> \
+							<a href="{{questionDeepLink Id product.ProductPageUrl productId}}">{{QuestionSummary}}</a> \
+						</div> \
+						<div class="BVFQAuthor"> \
+							<span class="BVFQQuestionBy">By:</span> \
+							<span class="BVFQQuestionAuthor">{{UserNickname}}</span> \
+						</div> \
+					</div> \
+					<div class="BVFQContent"> \
+						<div class="BVFQproductName">{{product.Name}}</div> \
+						<div class="BVFQQuestionText">{{QuestionDetails}}</div> \
+						<a class="BVFQReadMore" href="{{questionDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
+					</div> \
+				</div>');
 		}
 		else {
 			console.log('Invalid content type: '+contentType);
@@ -139,19 +173,12 @@
 				var contentsNode = resultsJson.BatchedResults[value.productId].Results; //All content Content
 				var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
 				contentsNode.forEach(function(contentElement,contentIndex,contentArray){
-					contentsDOM += domTemplate.DOM;
-					$.each(domTemplate.Tokens, function(key, value){
-						contentsDOM = contentsDOM.replace(eval('/{{'+key+'}}/g'),  eval(value)); //searches template for key and replaces it with specified path
-					});
+					contentElement['product'] = productNode; //pass product info to object for nested rendering
+					contentsDOM += domTemplate(contentElement); //passes individual review data to template function which returns final DOM
 				});
 				$(value.Node).html(contentsDOM); //push list of contents to the dom
 			}
 		});
-	}
-
-	function renderStars( num ) {
-		var star = '&#9733'; //note: star color and background color must be set individually in CSS
-		return Array(num + 1).join(star);
 	}
 
 }(jQuery));
