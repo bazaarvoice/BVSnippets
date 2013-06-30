@@ -20,7 +20,8 @@ $(".BVFeaturedReview").featuredReviews('72n07szwiwjspk7x6idcry4ch', {
 	staging: true,
 	limit: 3,
 	legacy_hostname: 'http://reviews.myshco.com',
-	legacy_displaycode: '9344-en_us'
+	legacy_displaycode: '9344-en_us',
+	abbreviate_text: 200
 });
 ```
 
@@ -42,6 +43,7 @@ staging - True indicates staging servers will be used, By default this is False 
 limit - Defaults to 1, may be up to 100 per product.
 legacy_hostname - This is used by legacy PRR/Conversations 1.0 and 2.0 clients.  Leave this blank if provisioned on Conversations 2013.
 legacy_displaycode - This is used by legacy PRR/Conversations 1.0 and 2.0 clients.  Leave this blank if provisioned on Conversations 2013.
+abbreviate_text - Enables content abbreviation. If the main text is longer than this value (by character count) then the text will be truncated and appended with an ellipsis. Must be a numeric value.
 </pre>
 
 Notes
