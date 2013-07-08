@@ -60,7 +60,7 @@
 		var featuredQuestionString = ''; //used to concatenate products for batch query
 		var featuredQuestionList = {}; //list of products to query
 		var queryString = '';
-		var questionsTemplate = renderAPIMap('questions', options);
+		var questionsTemplate = renderAPIMap('stories', options);
 
 		$.each(this, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
 			var currentProduct = $(this).attr("data-id");
@@ -114,7 +114,7 @@
 			apiversion: (options.apiversion !== undefined ? options.apiversion : '5.4'),
 			legacy_hostname: (options.legacy_hostname !== undefined ? options.legacy_hostname : false ), //false indicates C13 client
 			legacy_displaycode: (options.displaycode !== undefined ? options.displaycode : false ), //false indicates C13 client
-			content_path: (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/product/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com')),
+			content_path: (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com')),
 			abbreviate_text: (options.abbreviate_text !== undefined ? options.abbreviate_text : false)
 		};
 	}
@@ -196,23 +196,23 @@
 		}
 		else if(contentType == 'stories') {
 			return Handlebars.compile(' \
-				<div class="BVFQContainer"> \
-					<div class="BVFQSubjectImage"> \
+				<div class="BVFSYContainer"> \
+					<div class="BVFSYSubjectImage"> \
 						<img src="{{product.ImageUrl}}"> \
 					</div> \
-					<div class="BVFQContainerHeader"> \
-						<div class="BVFQSummary"> \
-							<a href="{{storyDeepLink Id product.ProductPageUrl productId}}">{{QuestionSummary}}</a> \
+					<div class="BVFSYContainerHeader"> \
+						<div class="BVFSYSummary"> \
+							<a href="{{storyDeepLink Id product.ProductPageUrl productId}}">{{Title}}</a> \
 						</div> \
-						<div class="BVFQAuthor"> \
-							<span class="BVFQQuestionBy">By:</span> \
-							<span class="BVFQQuestionAuthor">{{UserNickname}}</span> \
+						<div class="BVFSYAuthor"> \
+							<span class="BVFSYQuestionBy">By:</span> \
+							<span class="BVFSYQuestionAuthor">{{UserNickname}}</span> \
 						</div> \
 					</div> \
-					<div class="BVFQContent"> \
-						<div class="BVFQproductName">{{product.Name}}</div> \
-						<div class="BVFQStoryText">{{contentText QuestionDetails}}</div> \
-						<a class="BVFQReadMore" href="{{storyDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
+					<div class="BVFSYContent"> \
+						<div class="BVFSYproductName">{{product.Name}}</div> \
+						<div class="BVFSYStoryText">{{StoryText}}</div> \
+						<a class="BVFSYReadMore" href="{{storyDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
 					</div> \
 				</div>');
 		}
