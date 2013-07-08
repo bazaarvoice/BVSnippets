@@ -78,6 +78,32 @@
 		);
 	};
 
+	$.fn.featuredStories = function(apikey, options){
+		options = parseOptions(options);
+
+		/* GLOBALS FOR Questions */ 
+		var storyContent = {}; //used to capture inline rating object callback
+		var featuredStoryString = ''; //used to concatenate products for batch query
+		var featuredStoryList = {}; //list of products to query
+		var queryString = '';
+		var storiesTemplate = renderAPIMap('stories', options);
+
+		$.each(this, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
+			var currentProduct = $(this).attr("data-id");
+			featuredStoryString += '&resource.'+currentProduct+'=stories&Filter.'+currentProduct+'=productId:'+currentProduct;
+			featuredStoryList[element] = {Node: this, productId: currentProduct};
+		});
+
+		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+featuredStoryString+"&filter="+options.filters+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+
+
+		$.getJSON(queryString, {dataType: 'json'},
+			function(json){
+				renderResults(json, featuredStoryList, storiesTemplate);
+			}
+		);
+	};
+
 	/* UTILITY FUNCTIONS */
 	function parseOptions(options){
 		return {
@@ -88,7 +114,7 @@
 			apiversion: (options.apiversion !== undefined ? options.apiversion : '5.4'),
 			legacy_hostname: (options.legacy_hostname !== undefined ? options.legacy_hostname : false ), //false indicates C13 client
 			legacy_displaycode: (options.displaycode !== undefined ? options.displaycode : false ), //false indicates C13 client
-			content_path: (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com')),
+			content_path: (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/product/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com')),
 			abbreviate_text: (options.abbreviate_text !== undefined ? options.abbreviate_text : false)
 		};
 	}
@@ -107,6 +133,11 @@
 
 		Handlebars.registerHelper('questionDeepLink', function(Id,pdp,pid) { //id is the question id, pdp is the product page url, pid is the product external id
 			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#question/"+Id : options.content_path+pid+"/question/"+Id+"/redirect.htm")
+			return link;
+		});
+
+		Handlebars.registerHelper('storyDeepLink', function(Id,pdp,pid) { //id is the story id, pdp is the product page url, pid is the product external id
+			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#story/"+Id : options.content_path+pid+"/story/"+Id+"/redirect.htm")
 			return link;
 		});
 		
@@ -160,6 +191,28 @@
 						<div class="BVFQproductName">{{product.Name}}</div> \
 						<div class="BVFQQuestionText">{{contentText QuestionDetails}}</div> \
 						<a class="BVFQReadMore" href="{{questionDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
+					</div> \
+				</div>');
+		}
+		else if(contentType == 'stories') {
+			return Handlebars.compile(' \
+				<div class="BVFQContainer"> \
+					<div class="BVFQSubjectImage"> \
+						<img src="{{product.ImageUrl}}"> \
+					</div> \
+					<div class="BVFQContainerHeader"> \
+						<div class="BVFQSummary"> \
+							<a href="{{storyDeepLink Id product.ProductPageUrl productId}}">{{QuestionSummary}}</a> \
+						</div> \
+						<div class="BVFQAuthor"> \
+							<span class="BVFQQuestionBy">By:</span> \
+							<span class="BVFQQuestionAuthor">{{UserNickname}}</span> \
+						</div> \
+					</div> \
+					<div class="BVFQContent"> \
+						<div class="BVFQproductName">{{product.Name}}</div> \
+						<div class="BVFQStoryText">{{contentText QuestionDetails}}</div> \
+						<a class="BVFQReadMore" href="{{storyDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
 					</div> \
 				</div>');
 		}
