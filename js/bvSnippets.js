@@ -60,7 +60,7 @@
 		var featuredQuestionString = ''; //used to concatenate products for batch query
 		var featuredQuestionList = {}; //list of products to query
 		var queryString = '';
-		var questionsTemplate = renderAPIMap('stories', options);
+		var questionsTemplate = renderAPIMap('questions', options);
 
 		$.each(this, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
 			var currentProduct = $(this).attr("data-id");
