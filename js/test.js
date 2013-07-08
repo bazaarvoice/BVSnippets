@@ -81,7 +81,7 @@
 	$.fn.featuredStories = function(apikey, options){
 		options = parseOptions(options);
 
-		/* GLOBALS FOR Stories */ 
+		/* GLOBALS FOR Questions */ 
 		var storyContent = {}; //used to capture inline rating object callback
 		var featuredStoryString = ''; //used to concatenate products for batch query
 		var featuredStoryList = {}; //list of products to query
@@ -196,23 +196,23 @@
 		}
 		else if(contentType == 'stories') {
 			return Handlebars.compile(' \
-				<div class="BVFSYContainer"> \
-					<div class="BVFSYSubjectImage"> \
+				<div class="BVFQContainer"> \
+					<div class="BVFQSubjectImage"> \
 						<img src="{{product.ImageUrl}}"> \
 					</div> \
-					<div class="BVFSYContainerHeader"> \
-						<div class="BVFSYSummary"> \
+					<div class="BVFQContainerHeader"> \
+						<div class="BVFQSummary"> \
 							<a href="{{storyDeepLink Id product.ProductPageUrl productId}}">{{Title}}</a> \
 						</div> \
-						<div class="BVFSYAuthor"> \
-							<span class="BVFSYQuestionBy">By:</span> \
-							<span class="BVFSYQuestionAuthor">{{UserNickname}}</span> \
+						<div class="BVFQAuthor"> \
+							<span class="BVFQQuestionBy">By:</span> \
+							<span class="BVFQQuestionAuthor">{{UserNickname}}</span> \
 						</div> \
 					</div> \
-					<div class="BVFSYContent"> \
-						<div class="BVFSYproductName">{{product.Name}}</div> \
-						<div class="BVFSYStoryText">{{StoryText}}</div> \
-						<a class="BVFSYReadMore" href="{{storyDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
+					<div class="BVFQContent"> \
+						<div class="BVFQproductName">{{product.Name}}</div> \
+						<div class="BVFQStoryText">{{StoryText}}</div> \
+						<a class="BVFQReadMore" href="{{storyDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
 					</div> \
 				</div>');
 		}
