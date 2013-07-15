@@ -96,7 +96,6 @@
 
 		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+featuredStoryString+"&filter="+options.filters+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
 
-
 		$.getJSON(queryString, {dataType: 'json'},
 			function(json){
 				renderResults(json, featuredStoryList, storiesTemplate);
@@ -152,9 +151,10 @@
 					<div class="BVFRWProductImage"> \
 						<img src="{{product.ImageUrl}}"> \
 					</div> \
+					{{#each Results}} \
 					<div class="BVFRWContainerHeader"> \
 						<div class="BVFRWReviewTitle"> \
-							<a href="{{reviewDeepLink Id product.ProductPageUrl productId}}">{{Title}}</a> \
+							<a href="{{reviewDeepLink Id ../product.ProductPageUrl ProductId}}">{{Title}}</a> \
 						</div> \
 						<div class="BVFRWInlineReviewAuthor"> \
 							<span class="BVFRWReviewBy">By:</span> \
@@ -168,31 +168,40 @@
 						</div> \
 						<div class="BVFRWproductName">{{product.Name}}</div> \
 						<div class="BVFRWReviewText">{{contentText ReviewText}}</div> \
-						<a class="BVFRWReadMore" href="{{reviewDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
+						<a class="BVFRWReadMore" href="{{reviewDeepLink Id ../product.ProductPageUrl ProductId}}">Read More</a> \
 					</div> \
+					{{/each}} \
 				</div>');
 		}
 		else if(contentType == 'questions') {
 			return Handlebars.compile(' \
 				<div class="BVFQContainer"> \
+					<div class="BVFQSummary"> \
+						Q&A for {{product.Name}} \
+					</div> \
+					<div class="BVFQSummaryDetail"> \
+						Ask your questions.  Share your answers. \
+					</div> \
 					<div class="BVFQSubjectImage"> \
 						<img src="{{product.ImageUrl}}"> \
 					</div> \
+					{{#each Results}} \
 					<div class="BVFQContainerHeader"> \
+						Featured Question \
 						<div class="BVFQSummary"> \
-							<a href="{{questionDeepLink Id product.ProductPageUrl productId}}">{{QuestionSummary}}</a> \
+							<a href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{QuestionSummary}}</a> \
 						</div> \
 						<div class="BVFQAuthor"> \
-							<span class="BVFQQuestionBy">By:</span> \
-							<span class="BVFQQuestionAuthor">{{UserNickname}}</span> \
+							{{#if UserNickname}}<span class="BVFQQuestionBy">by </span> \
+							<span class="BVFQQuestionAuthor">{{UserNickname}}</span>{{/if}} \
 						</div> \
 					</div> \
 					<div class="BVFQContent"> \
-						<div class="BVFQproductName">{{product.Name}}</div> \
 						<div class="BVFQQuestionText">{{contentText QuestionDetails}}</div> \
-						<a class="BVFQReadMore" href="{{questionDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
+						<a class="BVFQReadMore" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">Read More</a> \
 					</div> \
-				</div>');
+					{{/each}} \
+				</div>' );
 		}
 		else if(contentType == 'stories') {
 			return Handlebars.compile(' \
@@ -228,13 +237,10 @@
 		}
 		$.each(resultsList, function(key, value){
 			if(typeof resultsJson.BatchedResults[value.productId] === 'object') {
-				var productNode = resultsJson.BatchedResults[value.productId].Includes.Products[resultsJson.BatchedResults[value.productId].Includes.ProductsOrder[0]]; //Product Information
-				var contentsNode = resultsJson.BatchedResults[value.productId].Results; //All content Content
+				var contentsNode = resultsJson.BatchedResults[value.productId]; //All content Content
+				contentsNode['product'] = resultsJson.BatchedResults[value.productId].Includes.Products[resultsJson.BatchedResults[value.productId].Includes.ProductsOrder[0]]; //Product Information
 				var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
-				contentsNode.forEach(function(contentElement,contentIndex,contentArray){
-					contentElement['product'] = productNode; //pass product info to object for nested rendering
-					contentsDOM += domTemplate(contentElement); //passes individual review data to template function which returns final DOM
-				});
+				contentsDOM = domTemplate(contentsNode);
 				$(value.Node).html(contentsDOM); //push list of contents to the dom
 			}
 		});
