@@ -145,6 +145,11 @@
 			return text;
 		});
 
+		Handlebars.registerHelper('postedDate', function(postedDate) {
+    		var submissionTime = new Date(postedDate);
+    		return (submissionTime.getMonth() + 1) + "/" + submissionTime.getDate() + "/" + submissionTime.getFullYear();
+    	});
+
 		if(contentType == 'reviews') {
 			return Handlebars.compile(' \
 				<div class="BVFRWContainer BVRating_{{Rating}}_{{RatingRange}}"> \
@@ -199,11 +204,14 @@
 						<div class="BVFQAuthor"> \
 							{{#if UserNickname}}<span class="BVFQQuestionBy">by </span> \
 							<span class="BVFQQuestionAuthor">{{UserNickname}}</span>{{/if}} \
+							<span class="BVFQPostedDate">posted on {{postedDate SubmissionTime}} on</span> \
+							<a class="BVFQProductLink" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{../product.Name}}</span> \
 						</div> \
 					</div> \
 					<div class="BVFQContent"> \
 						<div class="BVFQQuestionText">{{contentText QuestionDetails}}</div> \
-						<a class="BVFQReadMore" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">Read More</a> \
+						{{#if TotalAnswerCount}}<a class="BVFQReadAllAnswers" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">Read all {{TotalAnswerCount}} answers | </a>{{/if}} \
+						<a class="BVFQAnswerThisQuestion" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">Answer this question</a> \
 					</div> \
 					{{/each}} \
 				</div>' );
