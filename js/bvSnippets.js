@@ -68,7 +68,7 @@
 			featuredQuestionList[element] = {Node: this, productId: currentProduct};
 		});
 
-		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+featuredQuestionString+"&filter="+options.filters+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+featuredQuestionString+"&filter="+options.filters+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&stats=Questions&callback=?";
 
 
 		$.getJSON(queryString, {dataType: 'json'},
@@ -181,9 +181,14 @@
 					</div> \
 					<div class="BVFQSummaryDetail"> \
 						Ask your questions.  Share your answers. \
+						<a class="BVFQSummaryCount" href="{{product.ProductPageUrl}}">See all {{product.QAStatistics.TotalQuestionCount}} Questions | {{product.QAStatistics.TotalAnswerCount}} Answers</a> \
 					</div> \
 					<div class="BVFQSubjectImage"> \
 						<img src="{{product.ImageUrl}}"> \
+					</div> \
+					<div class="BVFQQuestionsTitle"> \
+						Latest Questions \
+						<hr> \
 					</div> \
 					{{#each Results}} \
 					<div class="BVFQContainerHeader"> \
