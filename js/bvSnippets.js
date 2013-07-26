@@ -183,7 +183,7 @@
 						</div> \
 						<div class="BVFRWproductName">{{product.Name}}</div> \
 						<div class="BVFRWReviewText">{{contentText ReviewText}}</div> \
-						<a class="BVFRWReadMore" href="{{reviewDeepLink Id ../product.ProductPageUrl Id}}">Read More</a> \
+						<a class="BVFRWReadMore" href="{{reviewDeepLink Id ../product.ProductPageUrl ProductId}}">Read More</a> \
 					</div> \
 					{{/each}} \
 				</div>');
