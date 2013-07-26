@@ -128,10 +128,20 @@
 		Handlebars.registerHelper('reviewDeepLink', function(Id,pdp,pid) { //id is the review id, pdp is the product page url, pid is the product external id
 			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#review/"+Id : options.content_path+pid+"/review/"+Id+"/redirect.htm")
 			return link;
-		});
+		});		
 
 		Handlebars.registerHelper('questionDeepLink', function(Id,pdp,pid) { //id is the question id, pdp is the product page url, pid is the product external id
 			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#question/"+Id : options.content_path+pid+"/question/"+Id+"/redirect.htm")
+			return link;
+		});
+
+		Handlebars.registerHelper('questionSubmissionLink', function(pid) { //pid is the product external id
+			var link = options.legacy_hostname+"/answers/"+ options.legacy_displaycode +"/product/"+pid+"/askquestion.htm";
+			return link;
+		});
+
+		Handlebars.registerHelper('answerSubmissionLink', function(Id,pid) { //id is the question id, pid is the product external id
+			var link = options.legacy_hostname+"/answers/"+ options.legacy_displaycode +"/product/"+pid+"/question/"+Id+"/answerquestion.htm";
 			return link;
 		});
 
@@ -173,7 +183,7 @@
 						</div> \
 						<div class="BVFRWproductName">{{product.Name}}</div> \
 						<div class="BVFRWReviewText">{{contentText ReviewText}}</div> \
-						<a class="BVFRWReadMore" href="{{reviewDeepLink Id ../product.ProductPageUrl ProductId}}">Read More</a> \
+						<a class="BVFRWReadMore" href="{{reviewDeepLink Id ../product.ProductPageUrl Id}}">Read More</a> \
 					</div> \
 					{{/each}} \
 				</div>');
@@ -211,9 +221,15 @@
 					<div class="BVFQContent"> \
 						<div class="BVFQQuestionText">{{contentText QuestionDetails}}</div> \
 						{{#if TotalAnswerCount}}<a class="BVFQReadAllAnswers" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">Read all {{TotalAnswerCount}} answers | </a>{{/if}} \
-						<a class="BVFQAnswerThisQuestion" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">Answer this question</a> \
+						<a class="BVFQAnswerThisQuestion" href="{{answerSubmissionLink Id productId}}">Answer this question</a> \
 					</div> \
 					{{/each}} \
+					<a class="BVFQPrev" href="">Previous</a> \
+					<a class="BVFQMiddleNumber" href="">1</a> \
+					<a class="BVFQNext" href="">Next</a> \
+					<div class="BVFQAskQuestion"> \
+						<a class="BVFQAskQuestion" href="{{questionSubmissionLink Id}}">Ask a new question</a> \
+					</div> \
 				</div>' );
 		}
 		else if(contentType == 'stories') {
