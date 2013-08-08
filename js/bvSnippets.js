@@ -190,47 +190,51 @@
 		}
 		else if(contentType == 'questions') {
 			return Handlebars.compile(' \
-				<div class="BVFQContainer"> \
-					<div class="BVFQSummary"> \
-						Q&A for {{product.Name}} \
+				<div class="BVLQWidgetCol"> \
+		            <div class="BVLQWidgetAlign"> \
+		                <div class="BVLQHeader"> \
+		                    <h1 class="BVLQHeaderTitle">Q&amp;A for {{product.Name}}</h1> \
+		                    <h2 class="BVLQHeaderSubTitle">Ask your questions. Share your answers.</h2> \
+		                    <div class="BVLQQuestionAndAnswerCount"> \
+		                        <a href="{{product.ProductPageUrl}}">See all <span class="BVLQLinkDiv">{{product.QAStatistics.TotalQuestionCount}} Questions</span>{{product.QAStatistics.TotalAnswerCount}} Answers</a> \
+		                    </div> \
+		                </div> \
+		                <div class="BVLQMainView"> \
+		                    <div class="BVLQHeaderTertiaryTitle">Latest questions</div> \
+							{{#each Results}} \
+							<div class="BVLQViewQuestionsContent"> \
+		                        <div class="BVLQQuestionBadge">Featured question</div> \
+		                        <h1 class="BVLQQuestionSummary"><a href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{QuestionSummary}}</a></h1> \
+		                        <div class="BVLQSignature"> \
+		                            {{#if UserNickname}} \
+		                            <div class="BVLQWrittenBy">by</div> \
+		                            <div class="BVLQNickname">{{UserNickname}}</div> \
+		                            {{/if}} \
+		                            <div class="BVLQLocation">posted on {{postedDate SubmissionTime}}</div> \
+		                            <div class="BVLQSignatureSubject"> \
+		                                on <a title="{{../product.Name}}" class="BVLQSignatureSubjectLink" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{../product.Name}}</a> \
+		                            </div> \
+		                        </div> \
+		                        <div class="BVLQQuestionBadge">Has staff answer</div>    \
+		                        <div class="BVLQQuestionBadge">Has expert answer</div>  \
+		                        <div class="BVLQQuestionAnswersCount"> \
+		                            {{#if TotalAnswerCount}}<a class="BVLQLinkDiv" href="#">Read all {{TotalAnswerCount}} answers</a>{{/if}} \
+		                            <a href="{{answerSubmissionLink Id productId}}">Answer this question</a> \
+		                        </div>   \
+		                    </div> \
+							{{/each}} \
 					</div> \
-					<div class="BVFQSummaryDetail"> \
-						Ask your questions.  Share your answers. \
-						<a class="BVFQSummaryCount" href="{{product.ProductPageUrl}}">See all {{product.QAStatistics.TotalQuestionCount}} Questions | {{product.QAStatistics.TotalAnswerCount}} Answers</a> \
-					</div> \
-					<div class="BVFQSubjectImage"> \
-						<img src="{{product.ImageUrl}}"> \
-					</div> \
-					<div class="BVFQQuestionsTitle"> \
-						Latest Questions \
-						<hr> \
-					</div> \
-					{{#each Results}} \
-					<div class="BVFQContainerHeader"> \
-						Featured Question \
-						<div class="BVFQSummary"> \
-							<a href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{QuestionSummary}}</a> \
-						</div> \
-						<div class="BVFQAuthor"> \
-							{{#if UserNickname}}<span class="BVFQQuestionBy">by </span> \
-							<span class="BVFQQuestionAuthor">{{UserNickname}}</span>{{/if}} \
-							<span class="BVFQPostedDate">posted on {{postedDate SubmissionTime}} on</span> \
-							<a class="BVFQProductLink" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{../product.Name}}</span> \
-						</div> \
-					</div> \
-					<div class="BVFQContent"> \
-						<div class="BVFQQuestionText">{{contentText QuestionDetails}}</div> \
-						{{#if TotalAnswerCount}}<a class="BVFQReadAllAnswers" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">Read all {{TotalAnswerCount}} answers | </a>{{/if}} \
-						<a class="BVFQAnswerThisQuestion" href="{{answerSubmissionLink Id productId}}">Answer this question</a> \
-					</div> \
-					{{/each}} \
-					<a class="BVFQPrev" href="">Previous</a> \
-					<a class="BVFQMiddleNumber" href="">1</a> \
-					<a class="BVFQNext" href="">Next</a> \
-					<div class="BVFQAskQuestion"> \
-						<a class="BVFQAskQuestion" href="{{questionSubmissionLink Id}}">Ask a new question</a> \
-					</div> \
-				</div>' );
+                <div class="BVLQPager"> \
+                    <span class="BVLQPageNumber BVLQSelectedPageNumber">1</span>  \
+                    <span class="BVLQPageNumber"><a href="#">2</a></span>  \
+                    <span class="BVLQPageNumber"><a href="#">3</a></span>  \
+                    <span class="BVLQPageNumber"><a href="#">4</a></span>  \
+                    <span class="BVLQPageNumber"><a href="#">5</a></span>  \
+                    <span class="BVLQNextPage"><a href="#">next</a></span> \
+                    <span class="BVLQPagerArrows">&gt;&gt;</span> \
+                </div> \
+                <div class="BVLQFooter"><a href="{{questionSubmissionLink Id}}">Ask a new question</a></div> \
+            </div>');
 		}
 		else if(contentType == 'stories') {
 			return Handlebars.compile(' \
