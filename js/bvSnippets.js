@@ -190,7 +190,6 @@
 		}
 		else if(contentType == 'questions') {
 			return Handlebars.compile(' \
-				<div class="BVLQWidgetCol"> \
 		            <div class="BVLQWidgetAlign"> \
 		                <div class="BVLQHeader"> \
 		                    <h1 class="BVLQHeaderTitle">Q&amp;A for {{product.Name}}</h1> \
@@ -233,8 +232,7 @@
                     <span class="BVLQNextPage"><a href="#">next</a></span> \
                     <span class="BVLQPagerArrows">&gt;&gt;</span> \
                 </div> \
-                <div class="BVLQFooter"><a href="{{questionSubmissionLink Id}}">Ask a new question</a></div> \
-            </div>');
+                <div class="BVLQFooter"><a href="{{questionSubmissionLink Id}}">Ask a new question</a></div>');
 		}
 		else if(contentType == 'stories') {
 			return Handlebars.compile(' \
