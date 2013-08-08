@@ -192,6 +192,7 @@
 			return Handlebars.compile(' \
 		            <div class="BVLQWidgetAlign"> \
 		                <div class="BVLQHeader"> \
+		                	<div class="BVLQQuestionSubjectImage"><img src={{product.ImageUrl}}></div> \
 		                    <h1 class="BVLQHeaderTitle">Q&amp;A for {{product.Name}}</h1> \
 		                    <h2 class="BVLQHeaderSubTitle">Ask your questions. Share your answers.</h2> \
 		                    <div class="BVLQQuestionAndAnswerCount"> \
