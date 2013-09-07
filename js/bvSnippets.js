@@ -1,6 +1,6 @@
 (function($){
 /*******************************************************************************************/    
-// jquery.bvSnippets.js - version 1.1
+// jquery.bvSnippets.js - version 1.2
 // A jQuery plugin for injecting common Bazaarvoice Data API snippets
 // 
 // Copyright (c) 2013, Ben Balentine
@@ -26,243 +26,118 @@
 // uninterrupted use, merchantability, or fitness for a particular purpose.
 /*******************************************************************************************/
 
-	$.fn.featuredReviews = function(apikey, options){
-		//define option defaults.  this also enumerates all possible options
+	// IE8 backwards compatibility
+	// if(console == 'undefined'){
+	// 	var console = {
+	// 		log: function(){}
+	// 	};
+	// }
+	$.fn.customSnippet = function(apikey, options){
+		//basic function that can be overridden with a custom query type and
+		var defaultConfiguration = {
+			selectedElements: this,
+			apiQueryType: options.apiQueryType,
+			template: options.template
+		};
 		options = parseOptions(options);
 		
-		/* GLOBALS FOR REVIEWS */ 
-		var reviewContent = {}; //used to capture inline rating object callback
-		var featuredReviewString = ''; //used to concatenate products for batch query
-		var featuredReviewList = {}; //list of products to query
-		var queryString = '';
-		var reviewsTemplate = renderAPIMap('reviews', options);
+		defaultSnippet(defaultConfiguration, apikey, options);
+	};
 
-		$.each(this, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
-			var currentProduct = $(this).attr("data-id");
-			featuredReviewString += '&resource.'+currentProduct+'=reviews&Filter.'+currentProduct+'=productId:'+currentProduct;
-			featuredReviewList[element] = {Node: this, productId: currentProduct};
-		});
+	$.fn.inlineRatings = function(apikey, options){
+		//define option defaults for inline ratings.  this also enumerates all possible options
+		var defaultConfiguration = {
+			selectedElements: this,
+			apiQueryType: "reviews",
+			template: "inline_ratings"
+		};
+		options.filter = 'IsSubjectActive:true&stats=reviews';
+		options.limit = 100;
+		options = parseOptions(options);
+		
+		defaultSnippet(defaultConfiguration, apikey, options);
+	};
 
-		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+featuredReviewString+"&filter="+options.filters+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
-
-		$.getJSON(queryString, {dataType: 'json'},
-			function(json){
-				renderResults(json, featuredReviewList, reviewsTemplate);
-			}
-		);
+	$.fn.featuredReviews = function(apikey, options){
+		//define option defaults for inline ratings.  this also enumerates all possible options
+		var defaultConfiguration = {
+			selectedElements: this,
+			apiQueryType: "reviews",
+			template: "reviews"
+		};
+		options.filter = 'IsFeatured:true';
+		options.limit = 1;
+		options = parseOptions(options);
+		
+		defaultSnippet(defaultConfiguration, apikey, options);
 	};
 
 	$.fn.featuredQuestions = function(apikey, options){
+		var defaultConfiguration = {
+			selectedElements: this,
+			apiQueryType: "questions",
+			template: "questions"
+		};
 		options = parseOptions(options);
-
-		/* GLOBALS FOR Questions */ 
-		var questionContent = {}; //used to capture inline rating object callback
-		var featuredQuestionString = ''; //used to concatenate products for batch query
-		var featuredQuestionList = {}; //list of products to query
-		var queryString = '';
-		var questionsTemplate = renderAPIMap('questions', options);
-
-		$.each(this, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
-			var currentProduct = $(this).attr("data-id");
-			featuredQuestionString += '&resource.'+currentProduct+'=questions&Filter.'+currentProduct+'=productId:'+currentProduct;
-			featuredQuestionList[element] = {Node: this, productId: currentProduct};
-		});
-
-		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+featuredQuestionString+"&filter="+options.filters+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&stats=Questions&callback=?";
-
-
-		$.getJSON(queryString, {dataType: 'json'},
-			function(json){
-				renderResults(json, featuredQuestionList, questionsTemplate);
-			}
-		);
+		
+		defaultSnippet(defaultConfiguration, apikey, options);
 	};
 
 	$.fn.featuredStories = function(apikey, options){
+		var defaultConfiguration = {
+			selectedElements: this,
+			apiQueryType: "stories",
+			template: "stories"
+		};
 		options = parseOptions(options);
-
-		/* GLOBALS FOR Questions */ 
-		var storyContent = {}; //used to capture inline rating object callback
-		var featuredStoryString = ''; //used to concatenate products for batch query
-		var featuredStoryList = {}; //list of products to query
-		var queryString = '';
-		var storiesTemplate = renderAPIMap('stories', options);
-
-		$.each(this, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
-			var currentProduct = $(this).attr("data-id");
-			featuredStoryString += '&resource.'+currentProduct+'=stories&Filter.'+currentProduct+'=productId:'+currentProduct;
-			featuredStoryList[element] = {Node: this, productId: currentProduct};
-		});
-
-		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+featuredStoryString+"&filter="+options.filters+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
-
-		$.getJSON(queryString, {dataType: 'json'},
-			function(json){
-				renderResults(json, featuredStoryList, storiesTemplate);
-			}
-		);
+		
+		defaultSnippet(defaultConfiguration, apikey, options);
 	};
 
 	/* UTILITY FUNCTIONS */
-	function parseOptions(options){
-		return {
-			sort: (options.sort !== undefined ? options.sort : 'LastModificationTime:desc'),
-			filters: (options.filters !== undefined ? options.filters : 'IsFeatured:true'),
-			staging: (options.staging !== undefined ? options.staging : false),
-			limit: (options.limit !== undefined ? options.limit : '1'),
-			apiversion: (options.apiversion !== undefined ? options.apiversion : '5.4'),
-			legacy_hostname: (options.legacy_hostname !== undefined ? options.legacy_hostname : false ), //false indicates C13 client
-			legacy_displaycode: (options.displaycode !== undefined ? options.displaycode : false ), //false indicates C13 client
-			content_path: (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com')),
-			abbreviate_text: (options.abbreviate_text !== undefined ? options.abbreviate_text : false)
-		};
+	function defaultSnippet(contentType, apikey, options){
+		var contentString; //used to concatenate products for batch query
+		var contentList = {}; //list of products to query
+		var queryString;
+		var newtemplate;
+
+		$.each(contentType.selectedElements, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
+			var currentProduct = $(this).attr("data-id");
+			contentString += '&resource.'+currentProduct+'='+contentType.apiQueryType+'&Filter.'+currentProduct+'=productId:'+currentProduct;
+			contentList[element] = {Node: this, productId: currentProduct};
+		});
+		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+contentString+"&filter="+options.filter+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+
+		$.when(
+			newtemplate = renderAPIMap(contentType.template, options)
+		).done(function(){
+			// console.log(defaultTemplate.template);
+			$.getJSON(queryString, {dataType: 'json'},
+				function(json){
+					renderResults(json, contentList, newtemplate, options);
+				}
+			);
+		});
 	}
 
 	function renderAPIMap(contentType, options) { //Returns the appropriate content API map for each content type.  This may eventually be replaced by a schema validation function or universal node type reference.
-
-		Handlebars.registerHelper('starRatings', function(num) {
-			var star = '&#9733;'; //note: star color and background color must be set individually in CSS
-			return Array(num + 1).join(star);
-		});
-
-		Handlebars.registerHelper('reviewDeepLink', function(Id,pdp,pid) { //id is the review id, pdp is the product page url, pid is the product external id
-			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#review/"+Id : options.content_path+pid+"/review/"+Id+"/redirect.htm")
-			return link;
-		});		
-
-		Handlebars.registerHelper('questionDeepLink', function(Id,pdp,pid) { //id is the question id, pdp is the product page url, pid is the product external id
-			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#question/"+Id : options.content_path+pid+"/question/"+Id+"/redirect.htm")
-			return link;
-		});
-
-		Handlebars.registerHelper('questionSubmissionLink', function(pid) { //pid is the product external id
-			var link = options.legacy_hostname+"/answers/"+ options.legacy_displaycode +"/product/"+pid+"/askquestion.htm";
-			return link;
-		});
-
-		Handlebars.registerHelper('answerSubmissionLink', function(Id,pid) { //id is the question id, pid is the product external id
-			var link = options.legacy_hostname+"/answers/"+ options.legacy_displaycode +"/product/"+pid+"/question/"+Id+"/answerquestion.htm";
-			return link;
-		});
-
-		Handlebars.registerHelper('storyDeepLink', function(Id,pdp,pid) { //id is the story id, pdp is the product page url, pid is the product external id
-			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#story/"+Id : options.content_path+pid+"/story/"+Id+"/redirect.htm")
-			return link;
-		});
+		defineHelpers(options);
 		
-		Handlebars.registerHelper('contentText', function(content) { //id is the question id, pdp is the product page url, pid is the product external id
-			var text = ( !options.abbreviate_text ? content : (content != null && content.length > options.abbreviate_text ? content.substring(0,options.abbreviate_text)+'...' : content ) );
-			return text;
+		// find template and load it based on content type
+		var currentTemplate;
+		$.ajax({
+			url: "../templates/"+contentType+".html",
+			success: function(data) {
+				currentTemplate = Handlebars.compile(data);
+			},
+			async: false
+		}).fail(function(e){
+			console.log('Failed loading content type: '+contentType);
 		});
-
-		Handlebars.registerHelper('postedDate', function(postedDate) {
-    		var submissionTime = new Date(postedDate);
-    		return (submissionTime.getMonth() + 1) + "/" + submissionTime.getDate() + "/" + submissionTime.getFullYear();
-    	});
-
-		if(contentType == 'reviews') {
-			return Handlebars.compile(' \
-				<div class="BVFRWContainer BVRating_{{Rating}}_{{RatingRange}}"> \
-					<div class="BVFRWProductImage"> \
-						<img src="{{product.ImageUrl}}"> \
-					</div> \
-					{{#each Results}} \
-					<div class="BVFRWContainerHeader"> \
-						<div class="BVFRWReviewTitle"> \
-							<a href="{{reviewDeepLink Id ../product.ProductPageUrl ProductId}}">{{Title}}</a> \
-						</div> \
-						<div class="BVFRWInlineReviewAuthor"> \
-							<span class="BVFRWReviewBy">By:</span> \
-							<span class="BVFRWReviewAuthor">{{UserNickname}}</span> \
-						</div> \
-					</div> \
-					<div class="BVFRWContent"> \
-						<div class="BVFWRatingWrapper"> \
-							<div class="BVFWRatingBackground">{{{starRatings RatingRange}}}</div> \
-							<div class="BVFRWRating">{{{starRatings Rating}}}</div> \
-						</div> \
-						<div class="BVFRWproductName">{{product.Name}}</div> \
-						<div class="BVFRWReviewText">{{contentText ReviewText}}</div> \
-						<a class="BVFRWReadMore" href="{{reviewDeepLink Id ../product.ProductPageUrl productId}}">Read More</a> \
-					</div> \
-					{{/each}} \
-				</div>');
-		}
-		else if(contentType == 'questions') {
-			return Handlebars.compile(' \
-		            <div class="BVLQWidgetAlign"> \
-		                <div class="BVLQHeader"> \
-		                    <h1 class="BVLQHeaderTitle">Q&amp;A for {{product.Name}}</h1> \
-		                    <h2 class="BVLQHeaderSubTitle">Ask your questions. Share your answers.</h2> \
-		                    <div class="BVLQQuestionAndAnswerCount"> \
-		                        <a href="{{product.ProductPageUrl}}">See all <span class="BVLQLinkDiv">{{product.QAStatistics.TotalQuestionCount}} Questions</span>{{product.QAStatistics.TotalAnswerCount}} Answers</a> \
-		                    </div> \
-		                </div> \
-		                <div class="BVLQMainView"> \
-		                    <div class="BVLQHeaderTertiaryTitle">Latest questions</div> \
-							{{#each Results}} \
-							<div class="BVLQViewQuestionsContent"> \
-		                        <div class="BVLQQuestionBadge">Featured question</div> \
-		                        <h1 class="BVLQQuestionSummary"><a href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{QuestionSummary}}</a></h1> \
-		                        <div class="BVLQSignature"> \
-		                            {{#if UserNickname}} \
-		                            <div class="BVLQWrittenBy">by</div> \
-		                            <div class="BVLQNickname">{{UserNickname}}</div> \
-		                            {{/if}} \
-		                            <div class="BVLQLocation">posted on {{postedDate SubmissionTime}}</div> \
-		                            <div class="BVLQSignatureSubject"> \
-		                                on <a title="{{../product.Name}}" class="BVLQSignatureSubjectLink" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{../product.Name}}</a> \
-		                            </div> \
-		                        </div> \
-		                        <div class="BVLQQuestionBadge">Has staff answer</div>    \
-		                        <div class="BVLQQuestionBadge">Has expert answer</div>  \
-		                        <div class="BVLQQuestionAnswersCount"> \
-		                            {{#if TotalAnswerCount}}<a class="BVLQLinkDiv" href="#">Read all {{TotalAnswerCount}} answers</a>{{/if}} \
-		                            <a href="{{answerSubmissionLink Id productId}}">Answer this question</a> \
-		                        </div>   \
-		                    </div> \
-							{{/each}} \
-					</div> \
-                <div class="BVLQPager"> \
-                    <span class="BVLQPageNumber BVLQSelectedPageNumber">1</span>  \
-                    <span class="BVLQPageNumber"><a href="#">2</a></span>  \
-                    <span class="BVLQPageNumber"><a href="#">3</a></span>  \
-                    <span class="BVLQPageNumber"><a href="#">4</a></span>  \
-                    <span class="BVLQPageNumber"><a href="#">5</a></span>  \
-                    <span class="BVLQNextPage"><a href="#">next</a></span> \
-                    <span class="BVLQPagerArrows">&gt;&gt;</span> \
-                </div> \
-                <div class="BVLQFooter"><a href="{{questionSubmissionLink Id}}">Ask a new question</a></div>');
-		}
-		else if(contentType == 'stories') {
-			return Handlebars.compile(' \
-				<div class="BVFSYContainer"> \
-					<div class="BVFSYSubjectImage"> \
-						<img src="{{product.ImageUrl}}"> \
-					</div> \
-					<div class="BVFSYContainerHeader"> \
-						<div class="BVFSYSummary"> \
-							<a href="{{storyDeepLink Id product.ProductPageUrl productId}}">{{Title}}</a> \
-						</div> \
-						<div class="BVFSYAuthor"> \
-							<span class="BVFSYQuestionBy">By:</span> \
-							<span class="BVFSYQuestionAuthor">{{UserNickname}}</span> \
-						</div> \
-					</div> \
-					<div class="BVFSYContent"> \
-						<div class="BVFSYproductName">{{product.Name}}</div> \
-						<div class="BVFSYStoryText">{{StoryText}}</div> \
-						<a class="BVFSYReadMore" href="{{storyDeepLink Id product.ProductPageUrl productId}}">Read More</a> \
-					</div> \
-				</div>');
-		}
-		else {
-			console.log('Invalid content type: '+contentType);
-			return false;
-		}
+		return currentTemplate;
 	}
 
-	function renderResults(resultsJson, resultsList, domTemplate) {
+	function renderResults(resultsJson, resultsList, domTemplate, options) {
 		if(resultsJson.Errors.length > 0){
 			console.log(JSON.stringify(resultsJson.Errors));
 		}
@@ -271,9 +146,74 @@
 				var contentsNode = resultsJson.BatchedResults[value.productId]; //All content Content
 				contentsNode['product'] = resultsJson.BatchedResults[value.productId].Includes.Products[resultsJson.BatchedResults[value.productId].Includes.ProductsOrder[0]]; //Product Information
 				var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
+				console.log("Applying overrides, if present: ");
+				$.extend(true, contentsNode, options.model_override);
+				console.log("Pushing JSON to template: ");
+				console.log(contentsNode);
 				contentsDOM = domTemplate(contentsNode);
 				$(value.Node).html(contentsDOM); //push list of contents to the dom
 			}
+		});
+	}
+
+	function parseOptions(options){
+		options["content_path"] = (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com'));
+
+		return $.extend({
+			sort: 'LastModificationTime:desc',
+			filter: '',
+			staging: false,
+			limit: 100,
+			apiversion: '5.4',
+			legacy_hostname: false, //false indicates C13 client
+			legacy_displaycode: false, //false indicates C13 client
+			abbreviate_text: false
+		}, options);
+	}
+
+	function defineHelpers(options){
+		Handlebars.registerHelper('starRatings', function(num) {
+			var star = '&#9733;'; //note: star color and background color must be set individually in CSS
+			if(!num){console.log("invalid array length: "+num);}
+			return Array(num + 1).join(star);
+		});
+		Handlebars.registerHelper('rangeToPercentage', function(value,max) {
+			return Math.round(10*((value/max)*100))/10;
+		});
+		Handlebars.registerHelper('roundValue', function(value) {
+			return Math.round(10*value)/10;
+		});
+		Handlebars.registerHelper('reviewDeepLink', function(Id,pdp,pid) { //id is the review id, pdp is the product page url, pid is the product external id
+			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#review/"+Id : options.content_path+pid+"/review/"+Id+"/redirect.htm")
+			return link;
+		});	
+		Handlebars.registerHelper('reviewSubmissionLink', function(pid) { //pid is the product external id
+			var link = options.content_path+"/"+pid+"/writereview.htm";
+			return link;
+		});	
+		Handlebars.registerHelper('questionDeepLink', function(Id,pdp,pid) { //id is the question id, pdp is the product page url, pid is the product external id
+			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#question/"+Id : options.content_path+pid+"/question/"+Id+"/redirect.htm")
+			return link;
+		});
+		Handlebars.registerHelper('questionSubmissionLink', function(pid) { //pid is the product external id
+			var link = options.legacy_hostname+"/answers/"+ options.legacy_displaycode +"/product/"+pid+"/askquestion.htm";
+			return link;
+		});
+		Handlebars.registerHelper('answerSubmissionLink', function(Id,pid) { //id is the question id, pid is the product external id
+			var link = options.legacy_hostname+"/answers/"+ options.legacy_displaycode +"/product/"+pid+"/question/"+Id+"/answerquestion.htm";
+			return link;
+		});
+		Handlebars.registerHelper('storyDeepLink', function(Id,pdp,pid) { //id is the story id, pdp is the product page url, pid is the product external id
+			var link = ( !options.legacy_hostname && !options.legacy_displaycode ? pdp+"#story/"+Id : options.content_path+pid+"/story/"+Id+"/redirect.htm")
+			return link;
+		});
+		Handlebars.registerHelper('contentText', function(content) { //id is the question id, pdp is the product page url, pid is the product external id
+			var text = ( !options.abbreviate_text ? content : (content != null && content.length > options.abbreviate_text ? content.substring(0,options.abbreviate_text)+'...' : content ) );
+			return text;
+		});
+		Handlebars.registerHelper('postedDate', function(postedDate) {
+			var submissionTime = new Date(postedDate);
+			return (submissionTime.getMonth() + 1) + "/" + submissionTime.getDate() + "/" + submissionTime.getFullYear();
 		});
 	}
 
