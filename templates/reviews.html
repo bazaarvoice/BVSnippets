@@ -1,0 +1,25 @@
+<div class="BVFRWContainer BVRating_{{Rating}}_{{RatingRange}}">
+	<div class="BVFRWProductImage">
+		<img src="{{product.ImageUrl}}">
+	</div>
+	{{#each Results}}
+	<div class="BVFRWContainerHeader">
+		<div class="BVFRWReviewTitle">
+			<a href="{{reviewDeepLink Id ../product.ProductPageUrl ProductId}}">{{Title}}</a>
+		</div>
+		<div class="BVFRWInlineReviewAuthor">
+			<span class="BVFRWReviewBy">By:</span>
+			<span class="BVFRWReviewAuthor">{{UserNickname}}</span>
+		</div>
+	</div>
+	<div class="BVFRWContent">
+		<div class="BVFWRatingWrapper">
+			<div class="BVFWRatingBackground">{{{starRatings RatingRange}}}</div>
+			<div class="BVFRWRating">{{{starRatings Rating}}}</div>
+		</div>
+		<div class="BVFRWproductName">{{product.Name}}</div>
+		<div class="BVFRWReviewText">{{contentText ReviewText}}</div>
+		<a class="BVFRWReadMore" href="{{reviewDeepLink Id ../product.ProductPageUrl productId}}">Read More</a>
+	</div>
+	{{/each}}
+</div>

@@ -1,0 +1,49 @@
+<html>
+<head>
+	<title>Example of Inline Ratings integration</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+	<script type="text/javascript" src="../js/handlebars.js"></script>
+	<script type="text/javascript" src="../js/bvSnippets.js"></script>
+	<link href="../css/bvSnippets_FeaturedReview_theme1.css" rel="stylesheet">
+	<script type="text/javascript">
+	$(function(){
+		//api key for disney: 5uyx3yp7ey8tw3tjdys7h4j7o
+		//default api key: 305i5xcijnuk5ykdjltwco1q8
+		$(".BVRRInlineRating").inlineRatings('5uyx3yp7ey8tw3tjdys7h4j7o', {
+			staging: true,
+			legacy_hostname: 'http://disneyland.ugc.bazaarvoice.com',
+			legacy_displaycode: '1919-en_us',
+			model_override: { // this one is tricky.  you have to match the root path for the JSON and override/add nodes specifically
+				product: {
+					ReviewStatistics: {
+						SecondaryRatingsAverages: { //overrides for labels
+							Cleanliness: {
+								label: "Cleanliness"
+							},
+							FoodQuality: {
+								label: "Food Quality"
+							},
+							CastMemberService: {
+								label: "Service"
+							},
+							AmbianceTheming: {
+								label: "Ambiance/Theming"
+							},
+							OfferedHealthyOptionMetDietaryNeeds: {
+								label: "Met Dietary Needs"
+							},
+							DiningPlan: {
+								label: "Dining Plan"
+							},
+						}
+					}
+				}
+			}
+		});
+	});
+	</script>
+</head>
+<body>
+	<div class="BVRRInlineRating" data-id="16660079"></div>
+</body>
+</html>

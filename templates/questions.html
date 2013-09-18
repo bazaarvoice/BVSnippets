@@ -1,0 +1,45 @@
+<script id="bv-questions" type="html">	
+<div class="BVLQWidgetAlign">
+        <div class="BVLQHeader">
+            <h1 class="BVLQHeaderTitle">Q&amp;A for {{product.Name}}</h1>
+            <h2 class="BVLQHeaderSubTitle">Ask your questions. Share your answers.</h2>
+            <div class="BVLQQuestionAndAnswerCount">
+                <a href="{{product.ProductPageUrl}}">See all <span class="BVLQLinkDiv">{{product.QAStatistics.TotalQuestionCount}} Questions</span>{{product.QAStatistics.TotalAnswerCount}} Answers</a>
+            </div>
+        </div>
+        <div class="BVLQMainView">
+            <div class="BVLQHeaderTertiaryTitle">Latest questions</div>
+			{{#each Results}}
+			<div class="BVLQViewQuestionsContent">
+                <div class="BVLQQuestionBadge">Featured question</div>
+                <h1 class="BVLQQuestionSummary"><a href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{QuestionSummary}}</a></h1>
+                <div class="BVLQSignature">
+                    {{#if UserNickname}}
+                    <div class="BVLQWrittenBy">by</div>
+                    <div class="BVLQNickname">{{UserNickname}}</div>
+                    {{/if}}
+                    <div class="BVLQLocation">posted on {{postedDate SubmissionTime}}</div>
+                    <div class="BVLQSignatureSubject">
+                        on <a title="{{../product.Name}}" class="BVLQSignatureSubjectLink" href="{{questionDeepLink Id ../product.ProductPageUrl productId}}">{{../product.Name}}</a>
+                    </div>
+                </div>
+                <div class="BVLQQuestionBadge">Has staff answer</div>   
+                <div class="BVLQQuestionBadge">Has expert answer</div> 
+                <div class="BVLQQuestionAnswersCount">
+                    {{#if TotalAnswerCount}}<a class="BVLQLinkDiv" href="#">Read all {{TotalAnswerCount}} answers</a>{{/if}}
+                    <a href="{{answerSubmissionLink Id productId}}">Answer this question</a>
+                </div>  
+            </div>
+			{{/each}}
+	</div>
+	<div class="BVLQPager">
+    <span class="BVLQPageNumber BVLQSelectedPageNumber">1</span> 
+    <span class="BVLQPageNumber"><a href="#">2</a></span> 
+    <span class="BVLQPageNumber"><a href="#">3</a></span> 
+    <span class="BVLQPageNumber"><a href="#">4</a></span> 
+    <span class="BVLQPageNumber"><a href="#">5</a></span> 
+    <span class="BVLQNextPage"><a href="#">next</a></span>
+    <span class="BVLQPagerArrows">&gt;&gt;</span>
+    </div>
+<div class="BVLQFooter"><a href="{{questionSubmissionLink Id}}">Ask a new question</a></div>
+</script>
