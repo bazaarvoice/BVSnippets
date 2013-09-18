@@ -21,3 +21,71 @@ a {color: #69c;}
 .productrightsmall .BVFWRatingWrapper {margin-top: 14px;}
 .productrightsmall img {position: absolute; width: 200px; z-index: 0;}
 .productrightsmall .BVFRWProductImage {float: none; margin: 0; padding: 0; border: none;}
+
+body {background-color: #f1f1f1; border-top: 3px solid #003D4C; padding-top: 15px; margin: 0; text-align: center; font-family: Arial, Helvetica, sans-serif; color: #333; font-size: 1em;}
+a {color: #276C9D; text-decoration: none;}
+a:hover {text-decoration: underline;}
+
+ul {margin: 0;}
+li {list-style-type: none;}
+
+h1 {color: #002F4C; font-size: 22px; font-weight: bold; margin-bottom: 10px;}
+h2 {color: #002F4C; font-size: 20px; font-weight: bold; margin: 0;}
+
+img {max-width: 100%; height: auto; width: auto\9; /* ie8 */}
+
+.clientSectionHeadings {background: none repeat scroll 0 0 #DDDDDD; border-radius: 6px 6px 6px 6px; margin-bottom: 20px; padding: 20px; text-align: center; text-transform: capitalize; color: #444; font-weight: bold;}
+
+.clear {content: "."; height: 0; width: 0; visibility: hidden; display: block; clear: both;}
+
+/* HEADER */
+.header {padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #ccc;}
+.content_wrapper {
+width: 980px;
+margin: 0 auto;
+text-align: left;
+}
+a.headerLogo {
+display: block;
+float: left
+}
+.tabs {
+float: right;
+width: 432px;
+margin-top: 35px
+}
+.tabs.accountFunctions {
+margin-top: 10px
+}
+.tabs li {
+float: left;
+font-size: 12px;
+color: #666666
+}
+.tabs li span {
+font-weight: normal
+}
+.tabs li a {
+}
+.tabs li.current a {
+color: #666666
+}
+.tabs li.home {
+}
+.tabs li.cart {
+}
+.tabs li.right {
+float: right;
+margin-right: 0
+}
+.tabs li.user {
+}
+.tabs li.orders {
+}
+.tabs li.logout {
+padding-left: 0
+}
+span.mini_cart {
+font-weight: normal;
+color: #999
+}
