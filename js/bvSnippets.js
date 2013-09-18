@@ -142,16 +142,25 @@
 			console.log(JSON.stringify(resultsJson.Errors));
 		}
 		$.each(resultsList, function(key, value){
-			if(typeof resultsJson.BatchedResults[value.productId] === 'object') {
-				var contentsNode = resultsJson.BatchedResults[value.productId]; //All content Content
-				contentsNode['product'] = resultsJson.BatchedResults[value.productId].Includes.Products[resultsJson.BatchedResults[value.productId].Includes.ProductsOrder[0]]; //Product Information
-				var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
-				console.log("Applying overrides, if present: ");
-				$.extend(true, contentsNode, options.model_override);
-				console.log("Pushing JSON to template: ");
-				console.log(contentsNode);
-				contentsDOM = domTemplate(contentsNode);
-				$(value.Node).html(contentsDOM); //push list of contents to the dom
+			if(typeof resultsJson.BatchedResults[value.productId] == 'object') {
+				if(typeof resultsJson.BatchedResults[value.productId].Includes.ProductsOrder == 'object') {
+					var contentsNode = resultsJson.BatchedResults[value.productId]; //All content Content
+					contentsNode['product'] = resultsJson.BatchedResults[value.productId].Includes.Products[resultsJson.BatchedResults[value.productId].Includes.ProductsOrder[0]]; //Product Information
+					var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
+					console.log("Applying overrides, if present: ");
+					$.extend(true, contentsNode, options.model_override);
+					console.log("Pushing JSON to template: ");
+					console.log(contentsNode);
+					contentsDOM = domTemplate(contentsNode);
+					$(value.Node).html(contentsDOM); //push list of contents to the dom
+				}
+				else {
+					console.log('Product node incomplete');
+					console.log(typeof resultsJson.BatchedResults[value.productId].Includes.ProductsOrder);
+				}
+			}
+			else {
+				console.log('API response incomplete');
 			}
 		});
 	}
