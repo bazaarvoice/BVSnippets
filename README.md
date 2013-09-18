@@ -10,17 +10,28 @@ The first part in this example, 'BVFeaturedReviewC13' can be any valid jquery se
 $(".BVFeaturedReviewC13").featuredReviews('305i5xcijnuk5ykdjltwco1q8', { staging: true });
 ```
 
-Example Usage For Lergacy PRR Clients
+Example Usage For Legacy PRR Clients
 =====================================
 If you are using Bazaarvoice's legacy PRR platform be sure to add your BV hostname and displaycode as arguments.
 ```
 $(".BVFeaturedReview").featuredReviews('72n07szwiwjspk7x6idcry4ch', {
+	staging: true,
+	legacy_hostname: 'http://reviews.myshco.com',
+	legacy_displaycode: '9344-en_us'
+});
+```
+
+Examples of Configuration Options
+=====================================
+```
+$(".BVFeaturedReview").featuredReviews('305i5xcijnuk5ykdjltwco1q8', {
 	sort: 'LastModificationTime:desc',
 	filters: 'IsFeatured:true&Filter=Rating:lte:4',
-	staging: true,
-	limit: 3,
-	legacy_hostname: 'http://reviews.myshco.com',
-	legacy_displaycode: '9344-en_us',
+	staging: false,
+	limit: 100,
+	apiversion: '5.4',
+	legacy_hostname: false, //false indicates C13 client
+	legacy_displaycode: false, //false indicates C13 client
 	abbreviate_text: 200
 });
 ```
