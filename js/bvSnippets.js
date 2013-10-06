@@ -25,6 +25,12 @@
 // implied, including without limitation any implied warranties of condition,
 // uninterrupted use, merchantability, or fitness for a particular purpose.
 /*******************************************************************************************/
+//get current script path
+var scriptEls = document.getElementsByTagName( 'script' );
+var thisScriptEl = scriptEls[scriptEls.length - 1];
+var scriptPath = thisScriptEl.src;
+
+var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );;
 
 	// IE8 backwards compatibility
 	// if(console == 'undefined'){
@@ -49,7 +55,7 @@
 		var defaultConfiguration = {
 			selectedElements: this,
 			apiQueryType: "reviews",
-			template: "inline_ratings"
+			template: options.template || "inline_ratings"
 		};
 		options.filter = 'IsSubjectActive:true&stats=reviews';
 		options.limit = 100;
@@ -63,7 +69,7 @@
 		var defaultConfiguration = {
 			selectedElements: this,
 			apiQueryType: "reviews",
-			template: "reviews"
+			template: options.template || "reviews"
 		};
 		options.filter = 'IsFeatured:true';
 		options.limit = 1;
@@ -76,7 +82,7 @@
 		var defaultConfiguration = {
 			selectedElements: this,
 			apiQueryType: "questions",
-			template: "questions"
+			template: options.template || "questions"
 		};
 		options = parseOptions(options);
 		
@@ -87,7 +93,7 @@
 		var defaultConfiguration = {
 			selectedElements: this,
 			apiQueryType: "stories",
-			template: "stories"
+			template: options.template || "stories"
 		};
 		options = parseOptions(options);
 		
@@ -111,7 +117,6 @@
 		$.when(
 			newtemplate = renderAPIMap(contentType.template, options)
 		).done(function(){
-			// console.log(defaultTemplate.template);
 			$.getJSON(queryString, {dataType: 'json'},
 				function(json){
 					renderResults(json, contentList, newtemplate, options);
@@ -126,8 +131,9 @@
 		// find template and load it based on content type
 		var currentTemplate;
 		$.ajax({
-			url: "../templates/"+contentType+".html",
+			url: localPath+"templates/"+contentType+".html",
 			success: function(data) {
+				console.log("Loading Template: "+contentType+".html");
 				currentTemplate = Handlebars.compile(data);
 			},
 			async: false
@@ -166,7 +172,7 @@
 	}
 
 	function parseOptions(options){
-		options["content_path"] = (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com'));
+		options["content_path"] = (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (!options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com'));
 
 		return $.extend({
 			sort: 'LastModificationTime:desc',
@@ -176,7 +182,8 @@
 			apiversion: '5.4',
 			legacy_hostname: false, //false indicates C13 client
 			legacy_displaycode: false, //false indicates C13 client
-			abbreviate_text: false
+			abbreviate_text: false,
+			callback: function(){}
 		}, options);
 	}
 
@@ -185,6 +192,11 @@
 			var star = '&#9733;'; //note: star color and background color must be set individually in CSS
 			if(!num){console.log("invalid array length: "+num);}
 			return Array(num + 1).join(star);
+		});
+		Handlebars.registerHelper('starGraphic', function(value) {
+			var roundedValue = (Math.round(10*value)/10).toString().split(".").join("_");
+			var starpath = options["content_path"]+roundedValue+"/5/ratingSecondary.png";
+			return starpath;
 		});
 		Handlebars.registerHelper('rangeToPercentage', function(value,max) {
 			return Math.round(10*((value/max)*100))/10;
