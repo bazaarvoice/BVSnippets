@@ -112,7 +112,8 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );;
 			contentString += '&resource.'+currentProduct+'='+contentType.apiQueryType+'&Filter.'+currentProduct+'=productId:'+currentProduct;
 			contentList[element] = {Node: this, productId: currentProduct};
 		});
-		queryString = (options.staging !== undefined && !options.staging ? 'http://api.bazaarvoice.com' :'http://stg.api.bazaarvoice.com')+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+contentString+"&filter="+options.filter+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+		queryPrefix = (options.ssl ? 'https://': 'http://') + (options.staging !== undefined && !options.staging ? 'api.bazaarvoice.com' :'stg.api.bazaarvoice.com');
+		queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+contentString+"&filter="+options.filter+"&include=Products&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
 
 		$.when(
 			newtemplate = renderAPIMap(contentType.template, options)
@@ -172,7 +173,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );;
 	}
 
 	function parseOptions(options){
-		options["content_path"] = (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (!options.staging ? 'http://display.ugc.bazaarvoice.com' : 'http://display-stg.ugc.bazaarvoice.com'));
+		options["content_path"] = (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.ssl === true ? 'https://': 'http://')+(!options.staging ? 'display.ugc.bazaarvoice.com' : 'display-stg.ugc.bazaarvoice.com'));
 
 		return $.extend({
 			sort: 'LastModificationTime:desc',
@@ -182,6 +183,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );;
 			apiversion: '5.4',
 			legacy_hostname: false, //false indicates C13 client
 			legacy_displaycode: false, //false indicates C13 client
+			ssl: false,
 			abbreviate_text: false,
 			callback: function(){}
 		}, options);
@@ -209,7 +211,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );;
 			return link;
 		});	
 		Handlebars.registerHelper('reviewSubmissionLink', function(pid) { //pid is the product external id
-			var link = options.content_path+"/"+pid+"/writereview.htm";
+			var link = options.content_path+pid+"/writereview.htm?return="+window.location.href;
 			return link;
 		});	
 		Handlebars.registerHelper('questionDeepLink', function(Id,pdp,pid) { //id is the question id, pdp is the product page url, pid is the product external id
