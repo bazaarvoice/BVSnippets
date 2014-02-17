@@ -27,6 +27,7 @@ p {color: #aeaeae;}
 .BVFRWContent {padding: 0 10px; color: #666; font-size: 14px;}
 .BVFRWReviewText {margin-top: 10px; line-height: 1.2;}
 .BVFRWproductName {margin-top: 6px; color: #333; font-size: 12px; font-weight: bold;}
+.BVRRProductLink {color: inherit; text-decoration: inherit;}
 a.BVFRWReadMore {background: #333; display: block; height: 30px; padding: 0 10px; border-radius: 5px; margin-top: 10px; margin-bottom: 20px; color: #fff; font-size: 14px; font-weight: bold; line-height: 32px; text-align: center; text-decoration: none;}
 a.BVFRWReadMore:hover {background: #999; text-decoration: underline;}
 .BVFWRatingBackground {display: block; color: #AAA;}

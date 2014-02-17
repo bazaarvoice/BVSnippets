@@ -1,0 +1,12 @@
+{{#each Results}}
+<div class="BVMediaContent">
+	{{#each Photos}}
+	<div class="BVMediaWrapper">
+		<img src="{{Sizes.thumbnail.Url}}">
+	</div>
+	<div class="BVMediaCaption">
+		<span class="BVMediaCaptionText">{{Caption}}</span>
+	</div>
+	{{/each}}
+</div>
+{{/each}}
