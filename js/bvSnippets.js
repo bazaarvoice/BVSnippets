@@ -66,7 +66,8 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             template: options.template || "inline_ratings"
         };
         options.stats = 'reviews';
-        options.filter = '';
+        options.staticResourceName = 'products'; //this must match contentString
+        options.contentString = '&resource.products=products&filter.products=Id:' + $(this).map(function(){return $(this).attr("data-id");}).get().join(","); //overrides query to use a single batch rather than one batch per product
         options.limit = 100;
         options = parseOptions(options);
         
@@ -138,7 +139,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             contentList[element] = {Node: this, productId: currentProduct};
         });
         queryPrefix = (options.ssl ? 'https://': 'http://') + (options.staging !== undefined && !options.staging ? 'api.bazaarvoice.com' :'stg.api.bazaarvoice.com');
-        queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+contentString+"&filter="+options.filter+"&include=Products"+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+        queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+(options.contentString || contentString)+"&filter="+options.filter+"&include="+(options.include || "products")+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
 
         $.when(
             newtemplate = renderAPIMap(contentType.template, options)
@@ -174,16 +175,25 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             console.log(JSON.stringify(resultsJson.Errors));
         }
         $.each(resultsList, function(key, value){
-            if(typeof resultsJson.BatchedResults[value.productId] == 'object') {
-                if(resultsJson.BatchedResults[value.productId]['Id'] == value.productId  && typeof resultsJson.BatchedResults[value.productId]['Includes']['ProductsOrder'] === 'undefined') { //if true, it's a products call and not a content call.  this requires moving the products into the expected includes node                    
-                    resultsJson.BatchedResults[value.productId].Includes['Products'] = resultsJson.BatchedResults[value.productId].Includes['Products'] || {};
-                    resultsJson.BatchedResults[value.productId].Includes['ProductsOrder'] = resultsJson.BatchedResults[value.productId].Includes['ProductsOrder'] || [];
-                    resultsJson.BatchedResults[value.productId].Includes['ProductsOrder'].push(value.productId);
-                    resultsJson.BatchedResults[value.productId].Includes['Products'][value.productId] = resultsJson.BatchedResults[value.productId]['Results'][0];
+            var resourceName = options.staticResourceName || value.productId;
+            var contentsNode = resultsJson.BatchedResults[resourceName]; //All content Content
+            contentsNode = $.extend(true, {
+                Includes: {
+                    Products: {},
+                    ProductsOrder: []
                 }
-                if(typeof resultsJson.BatchedResults[value.productId].Includes.ProductsOrder == 'object') {
-                    var contentsNode = resultsJson.BatchedResults[value.productId]; //All content Content
-                    contentsNode['product'] = resultsJson.BatchedResults[value.productId].Includes.Products[resultsJson.BatchedResults[value.productId].Includes.ProductsOrder[0]] || resultsJson.BatchedResults[value.productId]; //Product Information
+            },contentsNode); //initializes products heirarchy if it doesn't already exist
+            if(typeof contentsNode == 'object') {
+                if(contentsNode['Id'] == resourceName) { //if true, it's a products call and not a content call.  this requires moving the products into the expected includes node
+                    $.each(contentsNode['Results'], function(index, product){
+                        if(typeof product === 'object'){
+                            contentsNode.Includes['ProductsOrder'].push(product['Id']);
+                            contentsNode.Includes['Products'][product['Id']] = contentsNode['Results'][index];
+                        }
+                    });
+                }
+                if(typeof contentsNode.Includes.ProductsOrder == 'object') {
+                    contentsNode['product'] = contentsNode.Includes.Products[contentsNode.Includes.ProductsOrder[0]] || contentsNode; //Product Information
                     var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
                     console.log("Applying overrides, if present: ");
                     $.extend(true, contentsNode, options.model_override);
@@ -194,7 +204,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
                 }
                 else {
                     console.log('Product node incomplete');
-                    console.log(typeof resultsJson.BatchedResults[value.productId].Includes.ProductsOrder);
+                    console.log(typeof contentsNode.Includes.ProductsOrder);
                 }
             }
             else {
@@ -210,6 +220,9 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             sort: '',
             filter: '',
             stats: '',
+            include: 'products',
+            model_override: {},
+            contentString: '',
             staging: false,
             limit: 100,
             apiversion: '5.4',
