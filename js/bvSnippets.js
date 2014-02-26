@@ -66,7 +66,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             template: options.template || "inline_ratings"
         };
         options.stats = 'reviews';
-        options.filter = '&resource.products=products';
+        options.contentString = '&resource.products=products';
         options.filter_global = true;
         options.staticResourceName = 'products'; //this must match contentString
         options = parseOptions(options);
@@ -146,7 +146,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
                 queryChunk.contentList[element] = {Node: this, productId: currentProduct};
             });
             queryPrefix = (options.ssl ? 'https://': 'http://') + (options.staging !== undefined && !options.staging ? 'api.bazaarvoice.com' :'stg.api.bazaarvoice.com');
-            queryChunk.queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&filter="+options.filter+"&include="+(options.include || "products")+(options.filter_global ? '&Filter=Id:'+GlobalProductList.join(',') :'')+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+            queryChunk.queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+(options.contentString || queryChunk.contentString)+"&filter="+options.filter+"&include="+(options.include || "products")+(options.filter_global ? '&Filter=Id:'+GlobalProductList.join(',') :'')+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
             offset += maxQuerySize;
             queryList.push(queryChunk);
         }
@@ -230,6 +230,8 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             filter_global: false, //Used for products API calls.  
             stats: '',
             include: 'products',
+            staticResourceName: '',
+            contentString: '',
             model_override: {},
             staging: false,
             limit: 100,
