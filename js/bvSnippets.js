@@ -68,7 +68,6 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         options.stats = 'reviews';
         options.staticResourceName = 'products'; //this must match contentString
         options.contentString = '&resource.products=products&filter.products=Id:' + $(this).map(function(){return $(this).attr("data-id");}).get().join(","); //overrides query to use a single batch rather than one batch per product
-        options.limit = 100;
         options = parseOptions(options);
         
         defaultSnippet(defaultConfiguration, apikey, options);
@@ -120,7 +119,6 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             template: options.template || "media_gallery"
         };
         options.filter = 'HasPhotos:true';
-        options.limit = 100;
         options = parseOptions(options);
         
         defaultSnippet(defaultConfiguration, apikey, options);
@@ -158,7 +156,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         // find template and load it based on content type
         var currentTemplate;
         $.ajax({
-            url: localPath+"templates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
+            url: localPath+"BVtemplates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
             success: function(data) {
                 console.log("Loading Template: "+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"));
                 currentTemplate = Handlebars.compile(data);
@@ -193,7 +191,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
                     });
                 }
                 if(typeof contentsNode.Includes.ProductsOrder == 'object') {
-                    contentsNode['product'] = contentsNode.Includes.Products[contentsNode.Includes.ProductsOrder[0]] || contentsNode; //Product Information
+                    contentsNode['product'] = contentsNode.Includes.Products[value.productId] || contentsNode; //Product Information
                     var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
                     console.log("Applying overrides, if present: ");
                     $.extend(true, contentsNode, options.model_override);
