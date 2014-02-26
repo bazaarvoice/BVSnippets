@@ -66,8 +66,9 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             template: options.template || "inline_ratings"
         };
         options.stats = 'reviews';
+        options.filter = '&resource.products=products';
+        options.filter_global = true;
         options.staticResourceName = 'products'; //this must match contentString
-        options.contentString = '&resource.products=products&filter.products=Id:' + $(this).map(function(){return $(this).attr("data-id");}).get().join(","); //overrides query to use a single batch rather than one batch per product
         options = parseOptions(options);
         
         defaultSnippet(defaultConfiguration, apikey, options);
@@ -126,27 +127,40 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
 
     /* UTILITY FUNCTIONS */
     function defaultSnippet(contentType, apikey, options){
-        var contentString; //used to concatenate products for batch query
-        var contentList = {}; //list of products to query
-        var queryString;
         var newtemplate;
+        var offset = 0;
+        var maxQuerySize = 100;
+        var queryList = []; //This is an array of objects.  Each object contains a query string and an element
 
-        $.each(contentType.selectedElements, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
-            var currentProduct = $(this).attr("data-id");
-            contentString += '&resource.'+currentProduct+'='+contentType.apiQueryType+(contentType.apiQueryType === 'products' ? '&Filter.'+currentProduct+'=Id:'+currentProduct : '&Filter.'+currentProduct+'=productId:'+currentProduct );
-            contentList[element] = {Node: this, productId: currentProduct};
-        });
-        queryPrefix = (options.ssl ? 'https://': 'http://') + (options.staging !== undefined && !options.staging ? 'api.bazaarvoice.com' :'stg.api.bazaarvoice.com');
-        queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+(options.contentString || contentString)+"&filter="+options.filter+"&include="+(options.include || "products")+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
-
+        while(contentType.selectedElements.length > 0 && offset < options.limit){
+            var elementChunk = contentType.selectedElements.splice(0,maxQuerySize); //This is the loop iterator
+            var queryChunk = {
+                contentString: '',
+                contentList: {}, //list of products to query
+                queryString: ''
+            };
+            var GlobalProductList = $.map(elementChunk, function(value, index){return $(value).attr('data-id');});
+            $.each(elementChunk, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
+                var currentProduct = $(this).attr("data-id");
+                queryChunk.contentString += '&resource.'+currentProduct+'='+contentType.apiQueryType+'&Filter.'+currentProduct+'=productId:'+currentProduct;
+                queryChunk.contentList[element] = {Node: this, productId: currentProduct};
+            });
+            queryPrefix = (options.ssl ? 'https://': 'http://') + (options.staging !== undefined && !options.staging ? 'api.bazaarvoice.com' :'stg.api.bazaarvoice.com');
+            queryChunk.queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&filter="+options.filter+"&include="+(options.include || "products")+(options.filter_global ? '&Filter=Id:'+GlobalProductList.join(',') :'')+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+            offset += maxQuerySize;
+            queryList.push(queryChunk);
+        }
         $.when(
             newtemplate = renderAPIMap(contentType.template, options)
         ).done(function(){
-            $.getJSON(queryString, {dataType: 'json'},
-                function(json){
-                    renderResults(json, contentList, newtemplate, options);
-                }
-            );
+            // Loop through pages of queries since BV API limits all calls to 100 results
+            $.each(queryList, function(index, value){
+                $.getJSON(value.queryString, {dataType: 'json'},
+                    function(json){
+                        renderResults(json, value.contentList, newtemplate, options);
+                    }
+                );
+            });
         });
     }
 
@@ -156,9 +170,8 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         // find template and load it based on content type
         var currentTemplate;
         $.ajax({
-            url: localPath+"BVtemplates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
+            url: localPath+"templates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
             success: function(data) {
-                console.log("Loading Template: "+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"));
                 currentTemplate = Handlebars.compile(data);
             },
             async: false
@@ -193,10 +206,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
                 if(typeof contentsNode.Includes.ProductsOrder == 'object') {
                     contentsNode['product'] = contentsNode.Includes.Products[value.productId] || contentsNode; //Product Information
                     var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
-                    console.log("Applying overrides, if present: ");
                     $.extend(true, contentsNode, options.model_override);
-                    console.log("Pushing JSON to template: ");
-                    console.log(contentsNode);
                     contentsDOM = domTemplate(contentsNode);
                     $(value.Node).html(contentsDOM); //push list of contents to the dom
                 }
@@ -217,10 +227,10 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         return $.extend({
             sort: '',
             filter: '',
+            filter_global: false, //Used for products API calls.  
             stats: '',
             include: 'products',
             model_override: {},
-            contentString: '',
             staging: false,
             limit: 100,
             apiversion: '5.4',
