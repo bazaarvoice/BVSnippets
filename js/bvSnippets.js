@@ -132,7 +132,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         var maxQuerySize = 100;
         var queryList = []; //This is an array of objects.  Each object contains a query string and an element
 
-        while(contentType.selectedElements.length > 0 && offset < options.limit){
+        while(contentType.selectedElements.length > 0 && offset <= options.limit){
             var elementChunk = contentType.selectedElements.splice(0,maxQuerySize); //This is the loop iterator
             var queryChunk = {
                 contentString: '',
@@ -170,7 +170,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         // find template and load it based on content type
         var currentTemplate;
         $.ajax({
-            url: localPath+"templates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
+            url: localPath+"BVtemplates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
             success: function(data) {
                 currentTemplate = Handlebars.compile(data);
             },
