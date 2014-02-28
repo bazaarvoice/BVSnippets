@@ -170,7 +170,7 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         // find template and load it based on content type
         var currentTemplate;
         $.ajax({
-            url: localPath+"BVtemplates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
+            url: localPath+"templates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
             success: function(data) {
                 currentTemplate = Handlebars.compile(data);
             },
