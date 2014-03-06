@@ -7,13 +7,11 @@
 	<link href="../css/bvSnippets_FeaturedReview_theme1.css" rel="stylesheet">
 	<script type="text/javascript">
 	$(function(){
-		//api key for disney: 5uyx3yp7ey8tw3tjdys7h4j7o
-		//default api key: 305i5xcijnuk5ykdjltwco1q8
-		$(".BVRRInlineRating").customSnippet('5uyx3yp7ey8tw3tjdys7h4j7o', {
+		$(".BVRRInlineRating").customSnippet('305i5xcijnuk5ykdjltwco1q8', {
 			staging: true,
 			filter: '&stats=reviews',
-			legacy_hostname: 'http://disneyland.ugc.bazaarvoice.com',
-			legacy_displaycode: '1919-en_us',
+			legacy_hostname: 'http://client.ugc.bazaarvoice.com',
+			legacy_displaycode: '1234-en_us',
 			apiQueryType: 'reviews',
 			template: 'summary',
 			model_override: { // this one is tricky.  you have to match the root path for the JSON and override/add nodes specifically

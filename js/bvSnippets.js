@@ -206,7 +206,8 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
                 if(typeof contentsNode.Includes.ProductsOrder == 'object') {
                     contentsNode['product'] = contentsNode.Includes.Products[value.productId] || contentsNode; //Product Information
                     var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
-                    $.extend(true, contentsNode, options.model_override);
+                    $.extend(true, contentsNode, options.model_override); //apply model overrides
+                    console.log(contentsNode);
                     contentsDOM = domTemplate(contentsNode);
                     $(value.Node).html(contentsDOM); //push list of contents to the dom
                 }
