@@ -40,18 +40,10 @@ var scriptPath = thisScriptEl.src;
 
 var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
 
-    // IE8 backwards compatibility
-    // if(console == 'undefined'){
-    //  var console = {
-    //      log: function(){}
-    //  };
-    // }
     $.fn.customSnippet = function(apikey, options){
         //basic function that can be overridden with a custom query type and
         var defaultConfiguration = {
             selectedElements: this,
-            apiQueryType: options.apiQueryType,
-            template: options.template
         };
         options = parseOptions(options);
         
@@ -61,14 +53,13 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
     $.fn.inlineRatings = function(apikey, options){
         //define option defaults for inline ratings.  this also enumerates all possible options
         var defaultConfiguration = {
-            selectedElements: this,
-            apiQueryType: "products",
-            template: options.template || "inline_ratings"
+            selectedElements: this
         };
+        options.template = 'inline_ratings';
+        options.apiQueryType = 'statistics';
         options.stats = 'reviews';
-        options.contentString = '&resource.products=products';
+        options.contentString = 'resource.'+options.apiQueryType+'='+options.apiQueryType;
         options.filter_global = true;
-        options.staticResourceName = 'products'; //this must match contentString
         options = parseOptions(options);
         
         defaultSnippet(defaultConfiguration, apikey, options);
@@ -77,10 +68,10 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
     $.fn.featuredReviews = function(apikey, options){
         //define option defaults for inline ratings.  this also enumerates all possible options
         var defaultConfiguration = {
-            selectedElements: this,
-            apiQueryType: "reviews",
-            template: options.template || "reviews"
+            selectedElements: this
         };
+        options.template = 'reviews';
+        options.apiQueryType = 'reviews';
         options.filter = 'IsFeatured:true';
         options.sort = 'LastModificationTime:desc';
         options.limit = 1;
@@ -91,10 +82,10 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
 
     $.fn.featuredQuestions = function(apikey, options){
         var defaultConfiguration = {
-            selectedElements: this,
-            apiQueryType: "questions",
-            template: options.template || "questions"
+            selectedElements: this
         };
+        options.template = 'questions';
+        options.apiQueryType = 'questions';
         options.sort = 'LastModificationTime:desc';
         options = parseOptions(options);
         
@@ -103,10 +94,10 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
 
     $.fn.featuredStories = function(apikey, options){
         var defaultConfiguration = {
-            selectedElements: this,
-            apiQueryType: "stories",
-            template: options.template || "stories"
+            selectedElements: this
         };
+        options.template = 'stories';
+        options.apiQueryType = 'stories';
         options.sort = 'LastModificationTime:desc';
         options = parseOptions(options);
         
@@ -115,10 +106,10 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
 
     $.fn.mediaGallery = function(apikey, options){
         var defaultConfiguration = {
-            selectedElements: this,
-            apiQueryType: "reviews",
-            template: options.template || "media_gallery"
+            selectedElements: this
         };
+        options.template = 'media_gallery';
+        options.apiQueryType = 'reviews';
         options.filter = 'HasPhotos:true';
         options = parseOptions(options);
         
@@ -142,16 +133,16 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             var GlobalProductList = $.map(elementChunk, function(value, index){return $(value).attr('data-id');});
             $.each(elementChunk, function(element, index, array){ //this builds the collection that associates each DOM with its productId and sets up the query string for each product
                 var currentProduct = $(this).attr("data-id");
-                queryChunk.contentString += '&resource.'+currentProduct+'='+contentType.apiQueryType+'&Filter.'+currentProduct+'=productId:'+currentProduct;
-                queryChunk.contentList[element] = {Node: this, productId: currentProduct};
+                queryChunk.contentString += '&resource.'+currentProduct+'='+options.apiQueryType+'&Filter.'+currentProduct+'=productId:'+currentProduct;
+                queryChunk.contentList[element] = {Node: this, ProductId: currentProduct};
             });
             queryPrefix = (options.ssl ? 'https://': 'http://') + (options.staging !== undefined && !options.staging ? 'api.bazaarvoice.com' :'stg.api.bazaarvoice.com');
-            queryChunk.queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+(options.contentString || queryChunk.contentString)+"&filter="+options.filter+"&include="+(options.include || "products")+(options.filter_global ? '&Filter=Id:'+GlobalProductList.join(',') :'')+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
+            queryChunk.queryString = queryPrefix+"/data/batch.json?apiversion="+options.apiversion+"&passkey="+apikey+"&"+(options.contentString || queryChunk.contentString)+"&filter="+options.filter+"&include="+(options.include || "products")+(options.filter_global ? '&Filter='+(options.apiQueryType!=='statistics'?'Id':'productId')+':'+GlobalProductList.join(',') :'')+"&stats="+options.stats+"&Limit="+options.limit+"&Sort="+options.sort+"&callback=?";
             offset += maxQuerySize;
             queryList.push(queryChunk);
         }
         $.when(
-            newtemplate = renderAPIMap(contentType.template, options)
+            newtemplate = renderAPIMap(options)
         ).done(function(){
             // Loop through pages of queries since BV API limits all calls to 100 results
             $.each(queryList, function(index, value){
@@ -164,19 +155,22 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         });
     }
 
-    function renderAPIMap(contentType, options) { //Returns the appropriate content API map for each content type.  This may eventually be replaced by a schema validation function or universal node type reference.
+    function renderAPIMap(options) { //Returns the appropriate content API map for each content type.  This may eventually be replaced by a schema validation function or universal node type reference.
         defineHelpers(options);
-        
         // find template and load it based on content type
         var currentTemplate;
+        var templatePath = options.template;
+        if(options.template.indexOf('http') === -1){
+            templatePath = localPath+"templates/"+options.template+(options.template.indexOf('.') !== -1 ? "" : ".html");
+        }
         $.ajax({
-            url: localPath+"templates/"+contentType+(contentType.indexOf('.') !== -1 ? "" : ".html"),
+            url: templatePath,
             success: function(data) {
                 currentTemplate = Handlebars.compile(data);
             },
             async: false
         }).fail(function(e){
-            console.log('Failed loading content type: '+contentType);
+            console.log('Failed loading content type: '+options.template);
         });
         return currentTemplate;
     }
@@ -186,7 +180,8 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
             console.log(JSON.stringify(resultsJson.Errors));
         }
         $.each(resultsList, function(key, value){
-            var resourceName = options.staticResourceName || value.productId;
+            var resourcePrefix = options.apiQueryType!=='statistics'?'Id':'ProductId';
+            var resourceName = (options.apiQueryType==='statistics' || options.apiQueryType==='products')?options.apiQueryType:value.ProductId;
             var contentsNode = resultsJson.BatchedResults[resourceName]; //All content Content
             contentsNode = $.extend(true, {
                 Includes: {
@@ -198,16 +193,21 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
                 if(contentsNode['Id'] == resourceName) { //if true, it's a products call and not a content call.  this requires moving the products into the expected includes node
                     $.each(contentsNode['Results'], function(index, product){
                         if(typeof product === 'object'){
-                            contentsNode.Includes['ProductsOrder'].push(product['Id']);
-                            contentsNode.Includes['Products'][product['Id']] = contentsNode['Results'][index];
+                            if(typeof product[resourcePrefix] !== 'undefined'){
+                                contentsNode.Includes['ProductsOrder'].push(product[resourcePrefix]);
+                                contentsNode.Includes['Products'][product[resourcePrefix]] = contentsNode['Results'][index];
+                            }
+                            if(typeof product['ProductStatistics'] === 'object' && typeof product['ProductStatistics'][resourcePrefix] !== 'undefined'){
+                                contentsNode.Includes['ProductsOrder'].push(product['ProductStatistics'][resourcePrefix]);
+                                contentsNode.Includes['Products'][product['ProductStatistics'][resourcePrefix]] = product['ProductStatistics'];
+                            }
                         }
                     });
                 }
                 if(typeof contentsNode.Includes.ProductsOrder == 'object') {
-                    contentsNode['product'] = contentsNode.Includes.Products[value.productId] || contentsNode; //Product Information
+                    contentsNode['product'] = contentsNode.Includes.Products[value.ProductId] || contentsNode; //Product Information
                     var contentsDOM = ''; //needed to avoid an 'undefined' string appearing in the dom
                     $.extend(true, contentsNode, options.model_override); //apply model overrides
-                    console.log(contentsNode);
                     contentsDOM = domTemplate(contentsNode);
                     $(value.Node).html(contentsDOM); //push list of contents to the dom
                 }
@@ -226,21 +226,20 @@ var localPath = scriptPath.substr(0, scriptPath.lastIndexOf( '/js' )+1 );
         options["content_path"] = (options.legacy_hostname && options.legacy_displaycode ? options.legacy_hostname+( !options.staging ? '' : '/bvstaging' )+'/'+options.legacy_displaycode+'/' : (options.ssl === true ? 'https://': 'http://')+(!options.staging ? 'display.ugc.bazaarvoice.com' : 'display-stg.ugc.bazaarvoice.com'));
 
         return $.extend({
-            sort: '',
+            abbreviate_text: false,
+            apiversion: '5.4',
+            contentString: '',
             filter: '',
             filter_global: false, //Used for products API calls.  
-            stats: '',
             include: 'products',
-            staticResourceName: '',
-            contentString: '',
-            model_override: {},
-            staging: false,
             limit: 100,
-            apiversion: '5.4',
             legacy_hostname: false, //false indicates C13 client
             legacy_displaycode: false, //false indicates C13 client
+            model_override: {},
+            sort: '',
+            stats: '',
+            staging: false,
             ssl: false,
-            abbreviate_text: false,
             callback: function(){}
         }, options);
     }

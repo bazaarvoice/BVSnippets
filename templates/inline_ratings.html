@@ -1,10 +1,10 @@
 <div id="BVRRRatingOverall_" class="BVRRRating BVRRRatingNormal BVRRRatingOverall">
-	<a class="BVRRProductLink" href="{{product.ProductPageUrl}}">
+	{{#if product.ProductPageUrl}}<a class="BVRRProductLink" href="{{product.ProductPageUrl}}">{{/if}}
 		<div class="BVRRRatingNormalImage" style="position: relative; display: inline-block;">
 		<div class="BVFWRatingBackground">{{{starRatings product.ReviewStatistics.OverallRatingRange}}}</div>
 		<div class="BVFRWRating" style="overflow: hidden; width: {{rangeToPercentage product.ReviewStatistics.AverageOverallRating product.ReviewStatistics.OverallRatingRange}}%;">{{{starRatings product.ReviewStatistics.OverallRatingRange}}}</div>
 			<!-- <img src="https://<client>.ugc.bazaarvoice.com/bvstaging/<displaycode>-en_us/4_4/5/rating.png" class="BVImgOrSprite" width="80" height="12" alt="4.4 / 5" title="4.4 / 5"> use this if you need custom ratings stars -->
 		</div>
-		<span class="BVRRCount">({{product.TotalReviewCount}} reviews)</span>
-	</a>
+		<span class="BVRRCount">({{product.ReviewStatistics.TotalReviewCount}} reviews)</span>
+	{{#if product.ProductPageUrl}}</a>{{/if}}
 </div>
